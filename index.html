@@ -299,9 +299,10 @@ html,body{height:100%;font-family:var(--font);background:var(--bg);color:var(--i
 
 /* Tip card */
 .tip{
-  border-radius:16px;padding:18px;color:#fff;margin-bottom:14px;
+  border-radius:16px;padding:18px;color:#fff!important;margin-bottom:14px;
   position:relative;overflow:hidden;
 }
+.tip *{color:#fff!important}
 .tip::after{position:absolute;right:12px;bottom:8px;font-size:3rem;opacity:.2}
 
 /* Clause */
@@ -330,7 +331,69 @@ html,body{height:100%;font-family:var(--font);background:var(--bg);color:var(--i
 .spin{width:34px;height:34px;border:3px solid var(--tl);border-top-color:var(--t2);border-radius:50%;animation:rot .7s linear infinite;margin:32px auto}
 @keyframes rot{to{transform:rotate(360deg)}}
 
+/* Payment Modal */
+.modal-bg{
+  position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:500;
+  display:none;align-items:flex-end;justify-content:center;
+  backdrop-filter:blur(4px);
+}
+.modal-bg.on{display:flex;animation:fadeIn .2s ease}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.modal-sheet{
+  background:#fff;border-radius:24px 24px 0 0;
+  width:100%;max-width:500px;padding:24px;
+  max-height:90vh;overflow-y:auto;
+  animation:slideUp2 .3s ease;
+}
+@keyframes slideUp2{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.modal-drag{width:40px;height:4px;background:var(--bdr);border-radius:2px;margin:0 auto 20px}
+.modal-title{font-size:1.1rem;font-weight:900;color:var(--ink);margin-bottom:4px}
+.modal-sub{font-size:.78rem;color:var(--muted);margin-bottom:20px}
+.pay-method-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px}
+.pay-method{
+  border:2px solid var(--bdr);border-radius:14px;padding:12px;
+  text-align:center;cursor:pointer;transition:.2s;background:#fff;
+  font-family:var(--font);
+}
+.pay-method.sel{border-color:var(--t2);background:var(--tll)}
+.pay-method .pm-icon{font-size:1.4rem;display:block;margin-bottom:4px}
+.pay-method .pm-name{font-size:.72rem;font-weight:800;color:var(--ink)}
+.pay-method .pm-num{font-size:.62rem;color:var(--muted);font-family:var(--mono)}
+.form-inp{
+  width:100%;border:2px solid var(--bdr);border-radius:12px;
+  padding:13px 14px;font-size:.95rem;font-family:var(--font);
+  outline:none;transition:.2s;margin-bottom:12px;background:var(--bg);
+}
+.form-inp:focus{border-color:var(--t2);background:#fff;box-shadow:0 0 0 4px rgba(13,148,136,.1)}
+.form-lbl{font-size:.68rem;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;display:block;margin-bottom:6px}
+.pay-btn{
+  width:100%;background:linear-gradient(135deg,var(--t1),var(--t2));
+  color:#fff;border:none;border-radius:14px;padding:15px;
+  font-size:1rem;font-weight:800;cursor:pointer;font-family:var(--font);
+  box-shadow:0 6px 20px rgba(15,118,110,.4);transition:.2s;
+}
+.pay-btn:hover{transform:translateY(-1px)}
+.pay-btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.cancel-btn{
+  width:100%;background:none;border:2px solid var(--bdr);border-radius:14px;
+  padding:13px;font-size:.9rem;font-weight:700;cursor:pointer;
+  font-family:var(--font);color:var(--muted);margin-top:8px;
+}
+
+/* Payment reminder popup */
+.remind-popup{
+  position:fixed;top:80px;left:16px;right:16px;z-index:400;
+  background:linear-gradient(135deg,var(--r1),var(--r2));
+  color:#fff;border-radius:18px;padding:16px 18px;
+  box-shadow:0 8px 32px rgba(220,38,38,.45);
+  display:none;animation:slideDown .4s ease;
+  max-width:468px;margin:0 auto;
+}
+@keyframes slideDown{from{transform:translateY(-20px);opacity:0}to{transform:translateY(0);opacity:1}}
+.remind-popup.on{display:block}
+
 /* Toast */
+#toast{/* Toast */
 #toast{
   position:fixed;bottom:92px;left:50%;transform:translateX(-50%) translateY(20px);
   background:var(--ink);color:#fff;padding:10px 22px;border-radius:26px;
@@ -478,6 +541,86 @@ html,body{height:100%;font-family:var(--font);background:var(--bg);color:var(--i
 
 <div id="toast"></div>
 
+<!-- Payment Reminder Popup -->
+<div class="remind-popup" id="remind-popup">
+  <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px">
+    <div style="flex:1">
+      <div style="font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:.07em;opacity:.8;margin-bottom:4px">⏰ Kikumbusha cha Kodi</div>
+      <div style="font-size:.92rem;font-weight:800;margin-bottom:4px" id="remind-text">Kodi inakaribia kulipwa!</div>
+      <div style="font-size:.76rem;opacity:.88" id="remind-sub">Bonyeza hapa kulipa sasa hivi</div>
+    </div>
+    <button onclick="closeRemind()" style="background:rgba(255,255,255,.2);border:none;color:#fff;border-radius:8px;padding:6px 10px;cursor:pointer;font-size:.8rem;flex-shrink:0">✕</button>
+  </div>
+  <button onclick="closeRemind();openPayModal()" style="width:100%;background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.3);color:#fff;border-radius:12px;padding:10px;font-size:.84rem;font-weight:800;cursor:pointer;font-family:var(--font);margin-top:12px">
+    💳 Lipa Kodi Sasa →
+  </button>
+</div>
+
+<!-- Payment Modal -->
+<div class="modal-bg" id="pay-modal" onclick="if(event.target===this)closePayModal()">
+  <div class="modal-sheet">
+    <div class="modal-drag"></div>
+    <div class="modal-title">💳 Lipa Kodi Yako</div>
+    <div class="modal-sub" id="pay-modal-sub">Jaza taarifa za malipo yako</div>
+
+    <!-- Amount -->
+    <label class="form-lbl">Kiasi cha Kulipa (TZS)</label>
+    <input class="form-inp" id="pay-amount" type="number" placeholder="Kiasi cha pango">
+
+    <!-- Month -->
+    <label class="form-lbl">Mwezi wa Kulipa</label>
+    <select class="form-inp" id="pay-month">
+      <option value="">Chagua mwezi...</option>
+      <option>Januari 2026</option><option>Februari 2026</option>
+      <option>Machi 2026</option><option>Aprili 2026</option>
+      <option>Mei 2026</option><option>Juni 2026</option>
+      <option>Julai 2026</option><option>Agosti 2026</option>
+      <option>Septemba 2026</option><option>Oktoba 2026</option>
+      <option>Novemba 2026</option><option>Desemba 2026</option>
+    </select>
+
+    <!-- Payment method -->
+    <label class="form-lbl">Njia ya Kulipa</label>
+    <div class="pay-method-grid">
+      <div class="pay-method sel" onclick="selMethod(this,'NMB Bank')">
+        <span class="pm-icon">🏦</span>
+        <div class="pm-name">NMB Bank</div>
+        <div class="pm-num">60610028387</div>
+      </div>
+      <div class="pay-method" onclick="selMethod(this,'Yass')">
+        <span class="pm-icon">📱</span>
+        <div class="pm-name">Yass</div>
+        <div class="pm-num">17517483</div>
+      </div>
+      <div class="pay-method" onclick="selMethod(this,'M-PESA')">
+        <span class="pm-icon">📲</span>
+        <div class="pm-name">M-PESA</div>
+        <div class="pm-num">+255 736 631 613</div>
+      </div>
+      <div class="pay-method" onclick="selMethod(this,'TIGO/AIRTEL')">
+        <span class="pm-icon">📲</span>
+        <div class="pm-name">TIGO/AIRTEL</div>
+        <div class="pm-num">+255 736 631 613</div>
+      </div>
+    </div>
+
+    <!-- Reference -->
+    <label class="form-lbl">Namba ya Rejista / Muamala (hiari)</label>
+    <input class="form-inp" id="pay-ref" type="text" placeholder="Mfano: MPESA123456">
+
+    <!-- Note -->
+    <label class="form-lbl">Maelezo ya Ziada (hiari)</label>
+    <input class="form-inp" id="pay-note" type="text" placeholder="Mfano: Kodi ya Agosti 2026">
+
+    <div style="background:var(--tll);border:1px solid var(--tl);border-radius:12px;padding:12px 14px;font-size:.76rem;color:var(--t1);margin-bottom:16px;line-height:1.6">
+      ℹ️ Baada ya kutuma, KISEJA watapokea taarifa na watathibitisha malipo yako. Risiti itaonekana kwenye akaunti yako.
+    </div>
+
+    <button class="pay-btn" id="pay-submit" onclick="submitPayment()">💳 Tuma Ombi la Malipo</button>
+    <button class="cancel-btn" onclick="closePayModal()">Ghairi</button>
+  </div>
+</div>
+
 <script>
 // ═══ FIREBASE ═══
 firebase.initializeApp({
@@ -599,7 +742,7 @@ function goPage(id){
   document.querySelectorAll('.nb').forEach(b=>b.classList.remove('on'));
   document.getElementById('pg-'+id).classList.add('on');
   document.getElementById('nb-'+id).classList.add('on');
-  if(id==='home')renderHome();
+  if(id==='home'){renderHome();setTimeout(showRemindIfNeeded,1000);}
   if(id==='malipo')renderMalipo();
   if(id==='mkataba')renderMkataba();
   if(id==='ujumbe'){renderMsgs();loadCmts();}
@@ -760,6 +903,11 @@ function renderHome(){
       </div>
     </div>
 
+    <!-- PAY BUTTON -->
+    <button onclick="openPayModal()" style="width:100%;background:linear-gradient(135deg,var(--gr1),var(--gr2));color:#fff;border:none;border-radius:16px;padding:16px;font-size:1rem;font-weight:800;cursor:pointer;font-family:var(--font);box-shadow:0 6px 20px rgba(5,150,105,.4);margin-bottom:14px;display:flex;align-items:center;justify-content:center;gap:8px;transition:.2s">
+      💳 Lipa Kodi Sasa
+    </button>
+
     <!-- LAST PAYMENT -->
     <div class="card">
       <div class="chd">💰 Malipo ya Mwisho</div>
@@ -775,10 +923,10 @@ function renderHome(){
     </div>
 
     <!-- DAILY TIP -->
-    <div class="tip" style="${tip.bg};box-shadow:0 6px 20px rgba(0,0,0,.2)">
-      <div style="font-size:.68rem;font-weight:800;text-transform:uppercase;letter-spacing:.08em;opacity:.75;margin-bottom:6px">${tip.ic} Kidokezo cha Leo</div>
-      <div style="font-size:.88rem;font-weight:700;margin-bottom:5px">${tip.t}</div>
-      <div style="font-size:.8rem;opacity:.88;line-height:1.6">${tip.txt}</div>
+    <div style="${tip.bg};border-radius:16px;padding:18px;color:#fff;margin-bottom:14px;box-shadow:0 6px 20px rgba(0,0,0,.2)">
+      <div style="font-size:.68rem;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:rgba(255,255,255,.75);margin-bottom:6px">${tip.ic} Kidokezo cha Leo</div>
+      <div style="font-size:.88rem;font-weight:800;color:#fff;margin-bottom:5px">${tip.t}</div>
+      <div style="font-size:.8rem;color:rgba(255,255,255,.92);line-height:1.6">${tip.txt}</div>
     </div>
 
     <!-- CONTACT -->
@@ -813,6 +961,9 @@ function renderMalipo(){
         <div class="ks">${deni>0?'Tafadhali lipa':'Malipo sawa'}</div>
       </div>
     </div>
+    <button onclick="openPayModal()" style="width:100%;background:linear-gradient(135deg,var(--gr1),var(--gr2));color:#fff;border:none;border-radius:16px;padding:15px;font-size:.95rem;font-weight:800;cursor:pointer;font-family:var(--font);box-shadow:0 6px 20px rgba(5,150,105,.4);margin-bottom:14px;display:flex;align-items:center;justify-content:center;gap:8px">
+      💳 Lipa Kodi Sasa
+    </button>
     <div class="stl">Rekodi Zote za Malipo</div>
     <div class="card"><div class="cbd">
     ${MAL.length?MAL.map(p=>`
@@ -1043,10 +1194,10 @@ function renderZaidi(){
 
     <div class="stl">Vidokezo vya Mpangaji Bora</div>
     ${TIPS.map((tip,i)=>`
-      <div class="tip" style="${tip.bg};margin-bottom:10px;box-shadow:0 4px 16px rgba(0,0,0,.15)">
-        <div style="font-size:.68rem;font-weight:800;text-transform:uppercase;letter-spacing:.08em;opacity:.75;margin-bottom:5px">${tip.ic} Kidokezo</div>
-        <div style="font-size:.88rem;font-weight:800;margin-bottom:4px">${tip.t}</div>
-        <div style="font-size:.8rem;opacity:.88;line-height:1.6">${tip.txt}</div>
+      <div style="${tip.bg};border-radius:16px;padding:18px;color:#fff;margin-bottom:10px;box-shadow:0 4px 16px rgba(0,0,0,.15)">
+        <div style="font-size:.68rem;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:rgba(255,255,255,.72);margin-bottom:5px">${tip.ic} Kidokezo</div>
+        <div style="font-size:.88rem;font-weight:800;color:#fff;margin-bottom:4px">${tip.t}</div>
+        <div style="font-size:.8rem;color:rgba(255,255,255,.9);line-height:1.6">${tip.txt}</div>
       </div>`).join('')}
 
     <div class="stl">Mawasiliano</div>
@@ -1062,6 +1213,112 @@ function renderZaidi(){
       🚪 Toka kwenye Akaunti
     </button>
   `;
+}
+
+// ═══ PAYMENT SYSTEM ═══
+let selPayMethod = 'NMB Bank';
+
+function selMethod(el, method) {
+  selPayMethod = method;
+  document.querySelectorAll('.pay-method').forEach(b => b.classList.remove('sel'));
+  el.classList.add('sel');
+}
+
+function openPayModal() {
+  // Pre-fill amount with pango
+  if(T && T.pango) {
+    document.getElementById('pay-amount').value = T.pango;
+  }
+  document.getElementById('pay-modal-sub').textContent =
+    T ? 'Pango lako: TZS ' + tzs(T.pango) + '/mwezi — ' + T.nyumba : 'Jaza taarifa za malipo';
+  document.getElementById('pay-modal').classList.add('on');
+  document.body.style.overflow = 'hidden';
+}
+
+function closePayModal() {
+  document.getElementById('pay-modal').classList.remove('on');
+  document.body.style.overflow = '';
+}
+
+async function submitPayment() {
+  const amount = parseInt(document.getElementById('pay-amount').value);
+  const month = document.getElementById('pay-month').value;
+  const ref = document.getElementById('pay-ref').value.trim();
+  const note = document.getElementById('pay-note').value.trim();
+  const btn = document.getElementById('pay-submit');
+
+  if(!amount || amount < 1000) { toast('Weka kiasi sahihi cha kulipa'); return; }
+  if(!month) { toast('Chagua mwezi wa kulipa'); return; }
+
+  btn.disabled = true; btn.textContent = 'Inatuma ombi...';
+
+  try {
+    const payReqId = 'PAY-REQ-' + T.id + '-' + Date.now();
+    await db.collection('malipo_ombi').doc(payReqId).set({
+      tenant_id: T.id,
+      jina: T.jina,
+      nyumba: T.nyumba,
+      mkoa: T.mkoa,
+      pango: T.pango,
+      kiasi: amount,
+      mwezi: month,
+      njia: selPayMethod,
+      rejista: ref || '',
+      maelezo: note || '',
+      hali: 'INASUBIRI',
+      wakati: firebase.firestore.FieldValue.serverTimestamp(),
+      soma_admin: false
+    });
+
+    closePayModal();
+    toast('✅ Ombi la malipo limetumwa! KISEJA watathibitisha hivi karibuni.');
+
+    // Clear form
+    document.getElementById('pay-amount').value = '';
+    document.getElementById('pay-month').value = '';
+    document.getElementById('pay-ref').value = '';
+    document.getElementById('pay-note').value = '';
+
+  } catch(e) {
+    toast('❌ Hitilafu: ' + e.message);
+  }
+  btn.disabled = false; btn.textContent = '💳 Tuma Ombi la Malipo';
+}
+
+// Payment reminder popup
+function showRemindIfNeeded() {
+  if(!T) return;
+  const days = dl(T.kuisha);
+  const totPaid = MAL.reduce((s,p) => s+(p.kilipo||0), 0);
+  const totOwed = MAL.reduce((s,p) => s+(p.jumla||0), 0);
+  const deni = Math.max(0, totOwed - totPaid);
+
+  const popup = document.getElementById('remind-popup');
+  const txt = document.getElementById('remind-text');
+  const sub = document.getElementById('remind-sub');
+
+  // Show only if: mkataba unaisha siku 10 au chini, AU deni lipo
+  if(days <= 10 && days >= 0) {
+    txt.textContent = 'Siku ' + days + ' tu zimebaki!';
+    sub.textContent = 'Lipa kodi na huisha mkataba wako mapema iwezekanavyo';
+    popup.classList.add('on');
+    // Auto-hide after 8 seconds
+    setTimeout(() => popup.classList.remove('on'), 8000);
+  } else if(days < 0) {
+    txt.textContent = 'Mkataba wako UMEISHA!';
+    sub.textContent = 'Wasiliana na KISEJA mara moja — Lipa kodi ya mwezi huu';
+    popup.classList.add('on');
+    setTimeout(() => popup.classList.remove('on'), 10000);
+  } else if(deni > 0) {
+    txt.textContent = 'Una deni la TZS ' + tzs(deni);
+    sub.textContent = 'Lipa deni lako sasa hivi kupitia app';
+    popup.classList.add('on');
+    setTimeout(() => popup.classList.remove('on'), 6000);
+  }
+}
+
+function closeRemind() {
+  document.getElementById('remind-popup').classList.remove('on');
 }
 
 // ═══ SESSION RESTORE ═══
