@@ -1137,11 +1137,11 @@
 <!-- ═════════════════ MAOMBI YA MALIPO ═════════════════ -->
 <div id="maombi" class="content">
 <div class="page-header">
-  <div><div class="page-title">📥 Maombi ya Malipo</div><div class="page-sub">Maombi yaliyotumwa na wapangaji kupitia app yao — idhinisha au kataa</div></div>
+  <div><div class="page-title">📥 Maombi ya Malipo</div><div class="page-sub">Maombi ya Kodi na Huduma yaliyotumwa na wapangaji kupitia app yao — idhinisha au kataa</div></div>
 </div>
 <div class="table-wrap">
   <table class="table"><thead><tr>
-    <th>Tarehe</th><th>Jina</th><th>Nyumba</th><th>Mwezi</th><th>Kiasi</th><th>Njia</th><th>Rejea</th><th>Hali</th><th></th>
+    <th>Tarehe</th><th>Jina</th><th>Nyumba</th><th>Aina</th><th>Kipindi/Mwezi</th><th>Kiasi</th><th>Njia</th><th>Rejea</th><th>Hali</th><th></th>
   </tr></thead><tbody id="maombi-body"></tbody></table>
 </div>
 </div>
@@ -2477,27 +2477,38 @@ function renderMaoniTab(){
 // ════════════════════════════════════════
 function renderMaombiTab(){
   const body = document.getElementById('maombi-body');
-  body.innerHTML = '<tr><td colspan="9" style="text-align:center;color:var(--grey);padding:16px">Inapakia...</td></tr>';
+  body.innerHTML = '<tr><td colspan="10" style="text-align:center;color:var(--grey);padding:16px">Inapakia...</td></tr>';
   _fbdb.collection('malipo_ombi').orderBy('wakati','desc').limit(150).get().then(snap=>{
-    if(snap.empty){ body.innerHTML='<tr><td colspan="9" style="text-align:center;color:var(--grey);padding:16px">Hakuna maombi bado.</td></tr>'; updateMaombiBadge(0); return; }
+    if(snap.empty){ body.innerHTML='<tr><td colspan="10" style="text-align:center;color:var(--grey);padding:16px">Hakuna maombi bado.</td></tr>'; updateMaombiBadge(0); return; }
     const pending = snap.docs.filter(d=>(d.data().hali||'INASUBIRI')==='INASUBIRI').length;
     updateMaombiBadge(pending);
     body.innerHTML = snap.docs.map(d=>{
       const m = d.data();
       const time = m.wakati?.toDate ? m.wakati.toDate().toLocaleDateString('sw-TZ',{day:'2-digit',month:'short',year:'numeric'}) : '—';
       const hali = m.hali||'INASUBIRI';
+      const aina = m.aina||'KODI';
+      const ainaBadge = aina==='HUDUMA' ? `<span style="background:#E0F2FE;color:#0369A1;padding:3px 8px;border-radius:10px;font-size:.72rem;font-weight:600">💧 Huduma</span>` : `<span style="background:#FEF3C7;color:#92400E;padding:3px 8px;border-radius:10px;font-size:.72rem;font-weight:600">🏠 Kodi</span>`;
       const badgeColor = hali==='IMELIPWA'?'var(--green-l)':hali==='IMEKATALIWA'?'var(--red-l)':'var(--gold-l)';
       const badgeText = hali==='IMELIPWA'?'var(--green)':hali==='IMEKATALIWA'?'var(--red)':'var(--gold)';
+      const hudumaDetail = aina==='HUDUMA' && m.huduma ?
+        `<div style="font-size:.68rem;color:var(--grey);margin-top:2px">${[
+          m.huduma.maji?('💧'+Number(m.huduma.maji).toLocaleString()):null,
+          m.huduma.usafi?('🧹'+Number(m.huduma.usafi).toLocaleString()):null,
+          m.huduma.ulinzi?('🛡️'+Number(m.huduma.ulinzi).toLocaleString()):null,
+          m.huduma.net?('🌐'+Number(m.huduma.net).toLocaleString()):null,
+          m.huduma.bill?('🧾'+Number(m.huduma.bill).toLocaleString()):null
+        ].filter(Boolean).join(' · ')}</div>` : '';
       const actions = hali==='INASUBIRI' ?
         `<button class="btn btn-sec" style="padding:5px 10px;font-size:.72rem;margin-right:4px" onclick="maombiApprove('${d.id}')">✅ Idhinisha</button>
          <button class="btn btn-sec" style="padding:5px 10px;font-size:.72rem" onclick="maombiReject('${d.id}')">❌ Kataa</button>`
         : '—';
-      return `<tr><td>${time}</td><td>${m.jina||'—'}</td><td>${m.nyumba||'—'}</td><td>${m.mwezi||'—'}</td>
+      return `<tr><td>${time}</td><td>${m.jina||'—'}</td><td>${m.nyumba||'—'}</td><td>${ainaBadge}</td>
+        <td>${m.mwezi||'—'}${hudumaDetail}</td>
         <td>${Number(m.kiasi||0).toLocaleString()}</td><td>${m.njia||'—'}</td><td>${m.rejista||'—'}</td>
         <td><span style="background:${badgeColor};color:${badgeText};padding:3px 8px;border-radius:10px;font-size:.72rem;font-weight:600">${hali}</span></td>
         <td>${actions}</td></tr>`;
     }).join('');
-  }).catch(e=>{ body.innerHTML=`<tr><td colspan="9" style="color:var(--red)">Hitilafu: ${e.message}</td></tr>`; });
+  }).catch(e=>{ body.innerHTML=`<tr><td colspan="10" style="color:var(--red)">Hitilafu: ${e.message}</td></tr>`; });
 }
 function updateMaombiBadge(count){
   const badge = document.getElementById('maombi-badge');
@@ -2509,13 +2520,31 @@ async function maombiApprove(reqId){
   try{
     const doc = await _fbdb.collection('malipo_ombi').doc(reqId).get();
     const m = doc.data();
+    const aina = m.aina||'KODI';
     const risiti = 'RCP-' + (m.tenant_id||'').replace('TEN-','') + '-' + Date.now();
-    await _fbdb.collection('wapangaji').doc(m.tenant_id).collection('malipo').doc(risiti).set({
-      tarehe: new Date().toISOString().slice(0,10), miezi: 1,
-      pango: Number(m.kiasi)||0, maji:0, usafi:0, ulinzi:0,
-      jumla: Number(m.kiasi)||0, kilipo: Number(m.kiasi)||0, tofauti:0,
-      njia: m.njia||'', risiti, kipindi: m.mwezi||'', hali:'IMELIPWA', mpya:''
-    });
+    if(aina==='HUDUMA'){
+      const h = m.huduma||{};
+      await _fbdb.collection('wapangaji').doc(m.tenant_id).collection('malipo').doc(risiti).set({
+        tarehe: new Date().toISOString().slice(0,10), miezi: 1,
+        pango: 0, maji: Number(h.maji)||0, usafi: Number(h.usafi)||0, ulinzi: Number(h.ulinzi)||0,
+        net: Number(h.net)||0, bill: Number(h.bill)||0,
+        jumla: Number(m.kiasi)||0, kilipo: Number(m.kiasi)||0, tofauti:0,
+        njia: m.njia||'', risiti, kipindi: 'Huduma - ' + (m.mwezi||''), hali:'IMELIPWA', mpya:''
+      });
+    } else {
+      const miezi = Number(m.idadi_miezi)||1;
+      await _fbdb.collection('wapangaji').doc(m.tenant_id).collection('malipo').doc(risiti).set({
+        tarehe: new Date().toISOString().slice(0,10), miezi,
+        pango: Number(m.kiasi)||0, maji:0, usafi:0, ulinzi:0,
+        jumla: Number(m.kiasi)||0, kilipo: Number(m.kiasi)||0, tofauti:0,
+        njia: m.njia||'', risiti, kipindi: m.mwezi||'', hali:'IMELIPWA', mpya:''
+      });
+      // Sasisha tarehe ya kuisha kwa mpangaji kama tunajua atakayeishia
+      if(m.mwezi_mwisho){
+        const t = WAPANGAJI.find(x=>x.id===m.tenant_id);
+        if(t){ t.kuisha = m.mwezi_mwisho + '-28'; }
+      }
+    }
     await _fbdb.collection('malipo_ombi').doc(reqId).update({hali:'IMELIPWA', soma_admin:true});
     alert('✅ Malipo yamethibitishwa na kuongezwa kwenye historia ya mpangaji.');
     renderMaombiTab();
