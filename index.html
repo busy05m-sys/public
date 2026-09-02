@@ -2539,10 +2539,10 @@ async function maombiApprove(reqId){
         jumla: Number(m.kiasi)||0, kilipo: Number(m.kiasi)||0, tofauti:0,
         njia: m.njia||'', risiti, kipindi: m.mwezi||'', hali:'IMELIPWA', mpya:''
       });
-      // Sasisha tarehe ya kuisha kwa mpangaji kama tunajua atakayeishia
+      // Sasisha tarehe ya kuisha kwa mpangaji kwa tarehe kamili aliyochagua
       if(m.mwezi_mwisho){
         const t = WAPANGAJI.find(x=>x.id===m.tenant_id);
-        if(t){ t.kuisha = m.mwezi_mwisho + '-28'; }
+        if(t){ t.kuisha = m.mwezi_mwisho; }
       }
     }
     await _fbdb.collection('malipo_ombi').doc(reqId).update({hali:'IMELIPWA', soma_admin:true});
