@@ -844,7 +844,7 @@
   <div id="risiti-extra" style="padding:8px 18px;font-size:.78rem"></div>
   <div style="display:flex;align-items:center;gap:14px;padding:6px 18px 14px">
     <div id="risiti-qr" class="rqr"></div>
-    <div style="font-size:.7rem;color:#555;line-height:1.5"><strong>Hakiki risiti hii</strong><br>Piga picha barcode kwa kamera ya simu, au fungua <strong>nyumba.kiseja.com</strong> (sehemu ya wapangaji) → <strong>Hakiki Risiti</strong> na uandike namba <span id="risiti-qr-no" class="mono"></span></div>
+    <div style="font-size:.72rem;color:#555;line-height:1.6"><strong>Hakiki risiti hii:</strong> piga picha barcode, au fungua <strong>nyumba.kiseja.com</strong> → <strong>Hakiki Risiti</strong>.<br>Namba: <strong><span id="risiti-qr-no" class="mono"></span></strong></div>
   </div>
   <div class="doc-footer" id="risiti-footer"></div>
 </div>
@@ -4873,7 +4873,7 @@ function buildRisiti() {
   document.getElementById('risiti-no').textContent = p.risiti;
   document.getElementById('risiti-date').textContent = fmt(p.tarehe);
   document.getElementById('risiti-client').innerHTML = `
-    <div class="doc-row"><span>Jina:</span><strong>${p.jina}</strong></div>
+    <div class="doc-row"><span>Jina la Mlipaji:</span><strong style="font-size:.95rem">${p.jina}</strong></div>
     <div class="doc-row"><span>Nyumba:</span>${p.nyumba}</div>
     <div class="doc-row"><span>Mkoa:</span>${p.mkoa}</div>
     <div class="doc-row"><span>Tarehe Malipo:</span>${fmt(p.tarehe)}</div>
@@ -5458,6 +5458,6 @@ function buildMkataba() {
 
 </div><!-- /#admin-app-content -->
 
-<div class="no-print" style="position:fixed;left:8px;bottom:6px;font-size:10px;opacity:.45;pointer-events:none;z-index:50">Toleo 2.2</div>
+<div class="no-print" style="position:fixed;left:8px;bottom:6px;font-size:10px;opacity:.45;pointer-events:none;z-index:50">Toleo 2.3</div>
 </body>
 </html>
