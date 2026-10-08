@@ -402,7 +402,15 @@
   /* Additional print fixes */
   
 
+  .rqr{width:104px;height:104px;flex:none;background:#fff;border:1px solid #D7DCE8;padding:2px;box-sizing:border-box}
+  .rqr svg{width:100%;height:100%;display:block}
+  .stmt{border:1px solid #D7DCE8;border-radius:8px;padding:10px 12px;margin:10px 0;font-size:.76rem;background:#FAFBFD}
+  .stmt table{width:100%;border-collapse:collapse;margin:6px 0}
+  .stmt th,.stmt td{padding:4px 6px;border-bottom:1px solid #E8EBF5;text-align:left}
+  .stmt th{font-size:.64rem;text-transform:uppercase;color:#6B7280}
   @media print {
+    .rqr{width:28mm!important;height:28mm!important}
+    .stmt{background:#fff!important}
     *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
     html,body{margin:0!important;padding:0!important;background:#fff!important}
     .topbar,.nav,.no-print,.modal-overlay{display:none!important}
@@ -495,7 +503,7 @@
   adminAuth.onAuthStateChanged(function(user){
     const authScreen=document.getElementById('admin-auth-screen');
     const appContent=document.getElementById('admin-app-content');
-    if(user){
+    if(user && !user.isAnonymous){
       authScreen.style.display='none';
       appContent.style.display='block';
       const lbl=document.getElementById('admin-user-label');
@@ -576,6 +584,7 @@
   <div class="nav-tab" onclick="show('huduma')">🔧 Huduma</div>
   <div class="nav-tab" onclick="show('invoice')">🧾 Invoice</div>
   <div class="nav-tab" onclick="show('risiti')">🏷️ Risiti</div>
+  <div class="nav-tab" onclick="show('hakiki')">🔎 Hakiki</div>
   <div class="nav-tab" onclick="show('ripoti')">📋 Ripoti</div>
   <div class="nav-tab" onclick="show('matengenezo')">🔨 Matengenezo</div>
   <div class="nav-tab" onclick="show('mkataba')">📜 Mkataba</div>
@@ -605,6 +614,8 @@
   <div class="kpi-card" style="border-top:3px solid #C0392B"><div class="kpi-label">Mikataba Imeisha</div><div class="kpi-value" id="kpi-exp" style="color:#C0392B">—</div></div>
   <div class="kpi-card" style="border-top:3px solid #B8870B"><div class="kpi-label">Inakaribia (≤30 siku)</div><div class="kpi-value" id="kpi-near" style="color:#B8870B">—</div></div>
   <div class="kpi-card" style="border-top:3px solid #1A6B3A"><div class="kpi-label">Mapato/Mwezi</div><div class="kpi-value" id="kpi-rev" style="color:#1A6B3A">—</div></div>
+  <div class="kpi-card" style="border-top:3px solid #C0392B"><div class="kpi-label">Madeni ya Kodi</div><div class="kpi-value" id="kpi-deni" style="color:#C0392B;font-size:1.1rem">—</div></div>
+  <div class="kpi-card" style="border-top:3px solid #C0392B"><div class="kpi-label">Wanaodaiwa</div><div class="kpi-value" id="kpi-deni-n" style="color:#C0392B">—</div></div>
   <div class="kpi-card"><div class="kpi-label">Nyumba Zimepangwa</div><div class="kpi-value" id="kpi-occ">—</div></div>
 </div>
 <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap">
@@ -619,7 +630,7 @@
 <div class="table-wrap">
   <table class="table"><thead><tr>
     <th>#</th><th>Jina</th><th>ID</th><th>Nyumba</th><th>Mkoa</th>
-    <th>Kuingia</th><th>Pango/M</th><th>Kuisha</th><th>Hali</th><th>Zilizobaki</th><th>Simu</th><th class="no-print">Vitendo</th>
+    <th>Kuingia</th><th>Pango/M</th><th>Kuisha</th><th>Hali</th><th>Zilizobaki</th><th>Deni/Salio</th><th>Simu</th><th class="no-print">Vitendo</th>
   </tr></thead><tbody id="dash-body"></tbody></table>
 </div>
 </div>
@@ -639,7 +650,7 @@
 <div class="table-wrap">
   <table class="table"><thead><tr>
     <th>#</th><th>ID</th><th>Jina</th><th>Simu</th><th>Nyumba</th><th>Mkoa</th>
-    <th>Kuingia</th><th>Pango/M</th><th>Miezi</th><th>Kuisha</th><th>Hali</th><th class="no-print">Vitendo</th>
+    <th>Kuingia</th><th>Pango/M</th><th>Miezi</th><th>Kuisha</th><th>Hali</th><th>Deni/Salio</th><th class="no-print">Vitendo</th>
   </tr></thead><tbody id="wp-body"></tbody></table>
 </div>
 </div>
@@ -653,7 +664,7 @@
 <div class="table-wrap">
   <table class="table"><thead><tr>
     <th>#</th><th>Namba</th><th>Mkoa</th><th>Aina</th><th>Kodi/M</th>
-    <th>Gharama Ujenzi</th><th>Hali</th><th>Mpangaji</th><th class="no-print">Hariri</th>
+    <th>Gharama Ujenzi</th><th>Hali</th><th>Mpangaji</th><th>Kodi Hadi</th><th>Deni/Salio</th><th class="no-print">Hariri</th>
   </tr></thead><tbody id="ny-body"></tbody></table>
 </div>
 </div>
@@ -698,7 +709,7 @@
     <th>#</th><th>ID</th><th>Jina</th><th>Nyumba</th><th>Tarehe</th>
     <th>Mz</th><th>Pango</th><th>Maji</th><th>Usafi</th><th>Ulinzi</th>
     <th>Inatakiwa</th><th>Imelipwa</th><th>Tofauti</th>
-    <th>Njia</th><th>Risiti</th><th>Kipindi</th><th>Hali</th><th class="no-print">Del</th>
+    <th>Njia</th><th>Risiti</th><th>Kipindi</th><th>Hadi</th><th>Salio</th><th>Hali</th><th class="no-print">Del</th>
   </tr></thead><tbody id="mal-body"></tbody></table>
 </div>
 </div>
@@ -784,6 +795,7 @@
       </div>
       <div class="doc-body">
         <div id="inv-client-info" style="margin-bottom:14px;font-size:.78rem"></div>
+        <div id="inv-statement"></div>
         <table class="table"><thead><tr>
           <th>#</th><th>Maelezo</th><th style="text-align:right">Kiwango/M</th><th style="text-align:center">Miezi</th><th style="text-align:right">Jumla</th>
         </tr></thead><tbody id="inv-lines"></tbody></table>
@@ -824,10 +836,36 @@
     </div>
   </div>
   <div class="doc-total"><span>JUMLA IMELIPWA</span><span id="risiti-grand" style="color:#F0C040">TZS 0</span></div>
+  <div id="risiti-extra" style="padding:8px 18px;font-size:.78rem"></div>
+  <div style="display:flex;align-items:center;gap:14px;padding:6px 18px 14px">
+    <div id="risiti-qr" class="rqr"></div>
+    <div style="font-size:.7rem;color:#555;line-height:1.5"><strong>Hakiki risiti hii</strong><br>Piga picha barcode kwa kamera ya simu, au fungua <strong>tenant.kiseja.com</strong> → <strong>Hakiki</strong> na uandike namba <span id="risiti-qr-no" class="mono"></span></div>
+  </div>
   <div class="doc-footer" id="risiti-footer"></div>
 </div>
 </div>
 
+<!-- ═════════════════ HAKIKI ═════════════════ -->
+<div id="hakiki" class="content">
+<div class="page-header no-print">
+  <div><div class="page-title">🔎 Hakiki Risiti</div><div class="page-sub">Andika namba ya risiti, au scan barcode (QR) ya risiti kwa kamera ya simu</div></div>
+</div>
+<div class="table-wrap no-print" style="padding:16px;max-width:560px">
+  <div style="display:flex;gap:8px;flex-wrap:wrap">
+    <input type="text" id="hk-no" placeholder="RCP-001-001" onkeydown="if(event.key==='Enter')hakikiFromInput()"
+      style="border:1px solid var(--border);border-radius:7px;padding:10px 14px;font-size:.9rem;width:220px;font-family:monospace;text-transform:uppercase">
+    <button class="btn btn-pri" onclick="hakikiFromInput()">🔎 Hakiki</button>
+    <button class="btn btn-sec" onclick="startScan()">📷 Scan kwa Kamera</button>
+  </div>
+  <div id="hk-cam" style="display:none;margin-top:12px">
+    <video id="hk-video" playsinline muted style="width:100%;max-width:360px;border-radius:10px;background:#000"></video>
+    <canvas id="hk-canvas" style="display:none"></canvas>
+    <div style="margin-top:6px"><button class="btn btn-sec" onclick="stopScan()">✖ Funga Kamera</button> <span id="hk-scan-msg" class="small"></span></div>
+  </div>
+  <div id="hk-sync" class="small" style="margin-top:10px;color:#6B7280"></div>
+</div>
+<div id="hk-result" style="margin-top:14px;max-width:560px"></div>
+</div>
 <!-- ═════════════════ RIPOTI ═════════════════ -->
 <div id="ripoti" class="content">
 <div class="page-header no-print">
@@ -866,7 +904,7 @@
   </div>
   <table class="table"><thead><tr>
     <th>#</th><th>Jina</th><th>Nyumba</th><th>Mkoa</th><th>Pango/M</th>
-    <th>Jumla Inatakiwa</th><th>Jumla Imelipwa</th><th>Deni</th><th>Hali Mkataba</th>
+    <th>Kodi Hadi</th><th>Miezi Imechelewa</th><th>Jumla Imelipwa</th><th>Deni</th><th>Hali Mkataba</th>
   </tr></thead><tbody id="rp-debt-body"></tbody></table>
 </div>
 
@@ -926,6 +964,7 @@
 <div class="page-header">
   <div><div class="page-title">📈 Uchambuzi wa ROI</div><div class="page-sub">Mapato = Pango × Miezi × 92% | Dodoma: Jan 2018 | Mbeya: Jan 2023 | Mtwara: Mei 2026 | Fence MTR ÷ 8 = TZS 2,852,300/nyumba</div></div>
 </div>
+<div class="no-print" style="margin:0 0 10px;font-size:.78rem">Mapato yanayotumika: <select id="roi-mode" onchange="renderROI()" style="border:1px solid var(--border);border-radius:6px;padding:5px 8px;font-size:.78rem;background:#fff;font-family:inherit"><option value="max">Kubwa kati ya halisi na kadirio (kawaida)</option><option value="halisi">Yaliyokusanywa kwa kweli tu</option></select></div>
 <div class="kpis" id="roi-kpis"></div>
 <div class="kpis" id="roi-mkoa" style="margin-bottom:20px"></div>
 <div class="table-wrap">
@@ -933,7 +972,7 @@
     <th>#</th><th>Nyumba</th><th>Mkoa</th><th>Aina</th>
     <th>Gharama+Fence</th><th>Pango/M</th>
     <th style="color:#90EE90">Kilipo Halisi</th>
-    <th>Mapato (Max)</th>
+    <th>Mapato</th><th>Deni</th>
     <th>Faida/(Hasara)</th><th>ROI</th>
   </tr></thead><tbody id="roi-body"></tbody></table>
 </div>
@@ -1035,6 +1074,8 @@
     <span>Inatakiwa: <strong id="pay-calc-jm">TZS 0</strong></span>
     <span>Tofauti: <strong id="pay-calc-tf" style="color:#1A6B3A">TZS 0</strong></span>
   </div>
+  <div class="form-group" style="margin-bottom:10px"><label>Kipindi kianze tarehe <span class="small">(kinaanza kodi ya awali ilipoisha; badilisha tu kama kuna pengo)</span></label><input type="date" id="m-pay-kuanza" oninput="calcPay()"></div>
+  <div id="pay-calc-cover" style="background:#F0F7F2;border:1px solid #CFE6D6;border-radius:8px;padding:9px 12px;font-size:.78rem;margin-bottom:10px;display:none"></div>
   <div class="form-group" style="margin-bottom:12px"><label>Maelezo (hiari)</label><textarea id="m-pay-me" rows="2" placeholder="Maelezo ya ziada..."></textarea></div>
   <div class="modal-footer">
     <button class="btn btn-sec" onclick="closeModal('modal-malipo')">Ghairi</button>
@@ -1301,6 +1342,2307 @@
     </div>
 </div>
 <script>
+/* qrcode-generator 1.4.4 — Kazuhiko Arase — MIT license */
+//---------------------------------------------------------------------
+//
+// QR Code Generator for JavaScript
+//
+// Copyright (c) 2009 Kazuhiko Arase
+//
+// URL: http://www.d-project.com/
+//
+// Licensed under the MIT license:
+//  http://www.opensource.org/licenses/mit-license.php
+//
+// The word 'QR Code' is registered trademark of
+// DENSO WAVE INCORPORATED
+//  http://www.denso-wave.com/qrcode/faqpatent-e.html
+//
+//---------------------------------------------------------------------
+
+var qrcode = function() {
+
+  //---------------------------------------------------------------------
+  // qrcode
+  //---------------------------------------------------------------------
+
+  /**
+   * qrcode
+   * @param typeNumber 1 to 40
+   * @param errorCorrectionLevel 'L','M','Q','H'
+   */
+  var qrcode = function(typeNumber, errorCorrectionLevel) {
+
+    var PAD0 = 0xEC;
+    var PAD1 = 0x11;
+
+    var _typeNumber = typeNumber;
+    var _errorCorrectionLevel = QRErrorCorrectionLevel[errorCorrectionLevel];
+    var _modules = null;
+    var _moduleCount = 0;
+    var _dataCache = null;
+    var _dataList = [];
+
+    var _this = {};
+
+    var makeImpl = function(test, maskPattern) {
+
+      _moduleCount = _typeNumber * 4 + 17;
+      _modules = function(moduleCount) {
+        var modules = new Array(moduleCount);
+        for (var row = 0; row < moduleCount; row += 1) {
+          modules[row] = new Array(moduleCount);
+          for (var col = 0; col < moduleCount; col += 1) {
+            modules[row][col] = null;
+          }
+        }
+        return modules;
+      }(_moduleCount);
+
+      setupPositionProbePattern(0, 0);
+      setupPositionProbePattern(_moduleCount - 7, 0);
+      setupPositionProbePattern(0, _moduleCount - 7);
+      setupPositionAdjustPattern();
+      setupTimingPattern();
+      setupTypeInfo(test, maskPattern);
+
+      if (_typeNumber >= 7) {
+        setupTypeNumber(test);
+      }
+
+      if (_dataCache == null) {
+        _dataCache = createData(_typeNumber, _errorCorrectionLevel, _dataList);
+      }
+
+      mapData(_dataCache, maskPattern);
+    };
+
+    var setupPositionProbePattern = function(row, col) {
+
+      for (var r = -1; r <= 7; r += 1) {
+
+        if (row + r <= -1 || _moduleCount <= row + r) continue;
+
+        for (var c = -1; c <= 7; c += 1) {
+
+          if (col + c <= -1 || _moduleCount <= col + c) continue;
+
+          if ( (0 <= r && r <= 6 && (c == 0 || c == 6) )
+              || (0 <= c && c <= 6 && (r == 0 || r == 6) )
+              || (2 <= r && r <= 4 && 2 <= c && c <= 4) ) {
+            _modules[row + r][col + c] = true;
+          } else {
+            _modules[row + r][col + c] = false;
+          }
+        }
+      }
+    };
+
+    var getBestMaskPattern = function() {
+
+      var minLostPoint = 0;
+      var pattern = 0;
+
+      for (var i = 0; i < 8; i += 1) {
+
+        makeImpl(true, i);
+
+        var lostPoint = QRUtil.getLostPoint(_this);
+
+        if (i == 0 || minLostPoint > lostPoint) {
+          minLostPoint = lostPoint;
+          pattern = i;
+        }
+      }
+
+      return pattern;
+    };
+
+    var setupTimingPattern = function() {
+
+      for (var r = 8; r < _moduleCount - 8; r += 1) {
+        if (_modules[r][6] != null) {
+          continue;
+        }
+        _modules[r][6] = (r % 2 == 0);
+      }
+
+      for (var c = 8; c < _moduleCount - 8; c += 1) {
+        if (_modules[6][c] != null) {
+          continue;
+        }
+        _modules[6][c] = (c % 2 == 0);
+      }
+    };
+
+    var setupPositionAdjustPattern = function() {
+
+      var pos = QRUtil.getPatternPosition(_typeNumber);
+
+      for (var i = 0; i < pos.length; i += 1) {
+
+        for (var j = 0; j < pos.length; j += 1) {
+
+          var row = pos[i];
+          var col = pos[j];
+
+          if (_modules[row][col] != null) {
+            continue;
+          }
+
+          for (var r = -2; r <= 2; r += 1) {
+
+            for (var c = -2; c <= 2; c += 1) {
+
+              if (r == -2 || r == 2 || c == -2 || c == 2
+                  || (r == 0 && c == 0) ) {
+                _modules[row + r][col + c] = true;
+              } else {
+                _modules[row + r][col + c] = false;
+              }
+            }
+          }
+        }
+      }
+    };
+
+    var setupTypeNumber = function(test) {
+
+      var bits = QRUtil.getBCHTypeNumber(_typeNumber);
+
+      for (var i = 0; i < 18; i += 1) {
+        var mod = (!test && ( (bits >> i) & 1) == 1);
+        _modules[Math.floor(i / 3)][i % 3 + _moduleCount - 8 - 3] = mod;
+      }
+
+      for (var i = 0; i < 18; i += 1) {
+        var mod = (!test && ( (bits >> i) & 1) == 1);
+        _modules[i % 3 + _moduleCount - 8 - 3][Math.floor(i / 3)] = mod;
+      }
+    };
+
+    var setupTypeInfo = function(test, maskPattern) {
+
+      var data = (_errorCorrectionLevel << 3) | maskPattern;
+      var bits = QRUtil.getBCHTypeInfo(data);
+
+      // vertical
+      for (var i = 0; i < 15; i += 1) {
+
+        var mod = (!test && ( (bits >> i) & 1) == 1);
+
+        if (i < 6) {
+          _modules[i][8] = mod;
+        } else if (i < 8) {
+          _modules[i + 1][8] = mod;
+        } else {
+          _modules[_moduleCount - 15 + i][8] = mod;
+        }
+      }
+
+      // horizontal
+      for (var i = 0; i < 15; i += 1) {
+
+        var mod = (!test && ( (bits >> i) & 1) == 1);
+
+        if (i < 8) {
+          _modules[8][_moduleCount - i - 1] = mod;
+        } else if (i < 9) {
+          _modules[8][15 - i - 1 + 1] = mod;
+        } else {
+          _modules[8][15 - i - 1] = mod;
+        }
+      }
+
+      // fixed module
+      _modules[_moduleCount - 8][8] = (!test);
+    };
+
+    var mapData = function(data, maskPattern) {
+
+      var inc = -1;
+      var row = _moduleCount - 1;
+      var bitIndex = 7;
+      var byteIndex = 0;
+      var maskFunc = QRUtil.getMaskFunction(maskPattern);
+
+      for (var col = _moduleCount - 1; col > 0; col -= 2) {
+
+        if (col == 6) col -= 1;
+
+        while (true) {
+
+          for (var c = 0; c < 2; c += 1) {
+
+            if (_modules[row][col - c] == null) {
+
+              var dark = false;
+
+              if (byteIndex < data.length) {
+                dark = ( ( (data[byteIndex] >>> bitIndex) & 1) == 1);
+              }
+
+              var mask = maskFunc(row, col - c);
+
+              if (mask) {
+                dark = !dark;
+              }
+
+              _modules[row][col - c] = dark;
+              bitIndex -= 1;
+
+              if (bitIndex == -1) {
+                byteIndex += 1;
+                bitIndex = 7;
+              }
+            }
+          }
+
+          row += inc;
+
+          if (row < 0 || _moduleCount <= row) {
+            row -= inc;
+            inc = -inc;
+            break;
+          }
+        }
+      }
+    };
+
+    var createBytes = function(buffer, rsBlocks) {
+
+      var offset = 0;
+
+      var maxDcCount = 0;
+      var maxEcCount = 0;
+
+      var dcdata = new Array(rsBlocks.length);
+      var ecdata = new Array(rsBlocks.length);
+
+      for (var r = 0; r < rsBlocks.length; r += 1) {
+
+        var dcCount = rsBlocks[r].dataCount;
+        var ecCount = rsBlocks[r].totalCount - dcCount;
+
+        maxDcCount = Math.max(maxDcCount, dcCount);
+        maxEcCount = Math.max(maxEcCount, ecCount);
+
+        dcdata[r] = new Array(dcCount);
+
+        for (var i = 0; i < dcdata[r].length; i += 1) {
+          dcdata[r][i] = 0xff & buffer.getBuffer()[i + offset];
+        }
+        offset += dcCount;
+
+        var rsPoly = QRUtil.getErrorCorrectPolynomial(ecCount);
+        var rawPoly = qrPolynomial(dcdata[r], rsPoly.getLength() - 1);
+
+        var modPoly = rawPoly.mod(rsPoly);
+        ecdata[r] = new Array(rsPoly.getLength() - 1);
+        for (var i = 0; i < ecdata[r].length; i += 1) {
+          var modIndex = i + modPoly.getLength() - ecdata[r].length;
+          ecdata[r][i] = (modIndex >= 0)? modPoly.getAt(modIndex) : 0;
+        }
+      }
+
+      var totalCodeCount = 0;
+      for (var i = 0; i < rsBlocks.length; i += 1) {
+        totalCodeCount += rsBlocks[i].totalCount;
+      }
+
+      var data = new Array(totalCodeCount);
+      var index = 0;
+
+      for (var i = 0; i < maxDcCount; i += 1) {
+        for (var r = 0; r < rsBlocks.length; r += 1) {
+          if (i < dcdata[r].length) {
+            data[index] = dcdata[r][i];
+            index += 1;
+          }
+        }
+      }
+
+      for (var i = 0; i < maxEcCount; i += 1) {
+        for (var r = 0; r < rsBlocks.length; r += 1) {
+          if (i < ecdata[r].length) {
+            data[index] = ecdata[r][i];
+            index += 1;
+          }
+        }
+      }
+
+      return data;
+    };
+
+    var createData = function(typeNumber, errorCorrectionLevel, dataList) {
+
+      var rsBlocks = QRRSBlock.getRSBlocks(typeNumber, errorCorrectionLevel);
+
+      var buffer = qrBitBuffer();
+
+      for (var i = 0; i < dataList.length; i += 1) {
+        var data = dataList[i];
+        buffer.put(data.getMode(), 4);
+        buffer.put(data.getLength(), QRUtil.getLengthInBits(data.getMode(), typeNumber) );
+        data.write(buffer);
+      }
+
+      // calc num max data.
+      var totalDataCount = 0;
+      for (var i = 0; i < rsBlocks.length; i += 1) {
+        totalDataCount += rsBlocks[i].dataCount;
+      }
+
+      if (buffer.getLengthInBits() > totalDataCount * 8) {
+        throw 'code length overflow. ('
+          + buffer.getLengthInBits()
+          + '>'
+          + totalDataCount * 8
+          + ')';
+      }
+
+      // end code
+      if (buffer.getLengthInBits() + 4 <= totalDataCount * 8) {
+        buffer.put(0, 4);
+      }
+
+      // padding
+      while (buffer.getLengthInBits() % 8 != 0) {
+        buffer.putBit(false);
+      }
+
+      // padding
+      while (true) {
+
+        if (buffer.getLengthInBits() >= totalDataCount * 8) {
+          break;
+        }
+        buffer.put(PAD0, 8);
+
+        if (buffer.getLengthInBits() >= totalDataCount * 8) {
+          break;
+        }
+        buffer.put(PAD1, 8);
+      }
+
+      return createBytes(buffer, rsBlocks);
+    };
+
+    _this.addData = function(data, mode) {
+
+      mode = mode || 'Byte';
+
+      var newData = null;
+
+      switch(mode) {
+      case 'Numeric' :
+        newData = qrNumber(data);
+        break;
+      case 'Alphanumeric' :
+        newData = qrAlphaNum(data);
+        break;
+      case 'Byte' :
+        newData = qr8BitByte(data);
+        break;
+      case 'Kanji' :
+        newData = qrKanji(data);
+        break;
+      default :
+        throw 'mode:' + mode;
+      }
+
+      _dataList.push(newData);
+      _dataCache = null;
+    };
+
+    _this.isDark = function(row, col) {
+      if (row < 0 || _moduleCount <= row || col < 0 || _moduleCount <= col) {
+        throw row + ',' + col;
+      }
+      return _modules[row][col];
+    };
+
+    _this.getModuleCount = function() {
+      return _moduleCount;
+    };
+
+    _this.make = function() {
+      if (_typeNumber < 1) {
+        var typeNumber = 1;
+
+        for (; typeNumber < 40; typeNumber++) {
+          var rsBlocks = QRRSBlock.getRSBlocks(typeNumber, _errorCorrectionLevel);
+          var buffer = qrBitBuffer();
+
+          for (var i = 0; i < _dataList.length; i++) {
+            var data = _dataList[i];
+            buffer.put(data.getMode(), 4);
+            buffer.put(data.getLength(), QRUtil.getLengthInBits(data.getMode(), typeNumber) );
+            data.write(buffer);
+          }
+
+          var totalDataCount = 0;
+          for (var i = 0; i < rsBlocks.length; i++) {
+            totalDataCount += rsBlocks[i].dataCount;
+          }
+
+          if (buffer.getLengthInBits() <= totalDataCount * 8) {
+            break;
+          }
+        }
+
+        _typeNumber = typeNumber;
+      }
+
+      makeImpl(false, getBestMaskPattern() );
+    };
+
+    _this.createTableTag = function(cellSize, margin) {
+
+      cellSize = cellSize || 2;
+      margin = (typeof margin == 'undefined')? cellSize * 4 : margin;
+
+      var qrHtml = '';
+
+      qrHtml += '<table style="';
+      qrHtml += ' border-width: 0px; border-style: none;';
+      qrHtml += ' border-collapse: collapse;';
+      qrHtml += ' padding: 0px; margin: ' + margin + 'px;';
+      qrHtml += '">';
+      qrHtml += '<tbody>';
+
+      for (var r = 0; r < _this.getModuleCount(); r += 1) {
+
+        qrHtml += '<tr>';
+
+        for (var c = 0; c < _this.getModuleCount(); c += 1) {
+          qrHtml += '<td style="';
+          qrHtml += ' border-width: 0px; border-style: none;';
+          qrHtml += ' border-collapse: collapse;';
+          qrHtml += ' padding: 0px; margin: 0px;';
+          qrHtml += ' width: ' + cellSize + 'px;';
+          qrHtml += ' height: ' + cellSize + 'px;';
+          qrHtml += ' background-color: ';
+          qrHtml += _this.isDark(r, c)? '#000000' : '#ffffff';
+          qrHtml += ';';
+          qrHtml += '"/>';
+        }
+
+        qrHtml += '</tr>';
+      }
+
+      qrHtml += '</tbody>';
+      qrHtml += '</table>';
+
+      return qrHtml;
+    };
+
+    _this.createSvgTag = function(cellSize, margin, alt, title) {
+
+      var opts = {};
+      if (typeof arguments[0] == 'object') {
+        // Called by options.
+        opts = arguments[0];
+        // overwrite cellSize and margin.
+        cellSize = opts.cellSize;
+        margin = opts.margin;
+        alt = opts.alt;
+        title = opts.title;
+      }
+
+      cellSize = cellSize || 2;
+      margin = (typeof margin == 'undefined')? cellSize * 4 : margin;
+
+      // Compose alt property surrogate
+      alt = (typeof alt === 'string') ? {text: alt} : alt || {};
+      alt.text = alt.text || null;
+      alt.id = (alt.text) ? alt.id || 'qrcode-description' : null;
+
+      // Compose title property surrogate
+      title = (typeof title === 'string') ? {text: title} : title || {};
+      title.text = title.text || null;
+      title.id = (title.text) ? title.id || 'qrcode-title' : null;
+
+      var size = _this.getModuleCount() * cellSize + margin * 2;
+      var c, mc, r, mr, qrSvg='', rect;
+
+      rect = 'l' + cellSize + ',0 0,' + cellSize +
+        ' -' + cellSize + ',0 0,-' + cellSize + 'z ';
+
+      qrSvg += '<svg version="1.1" xmlns="http://www.w3.org/2000/svg"';
+      qrSvg += !opts.scalable ? ' width="' + size + 'px" height="' + size + 'px"' : '';
+      qrSvg += ' viewBox="0 0 ' + size + ' ' + size + '" ';
+      qrSvg += ' preserveAspectRatio="xMinYMin meet"';
+      qrSvg += (title.text || alt.text) ? ' role="img" aria-labelledby="' +
+          escapeXml([title.id, alt.id].join(' ').trim() ) + '"' : '';
+      qrSvg += '>';
+      qrSvg += (title.text) ? '<title id="' + escapeXml(title.id) + '">' +
+          escapeXml(title.text) + '</title>' : '';
+      qrSvg += (alt.text) ? '<description id="' + escapeXml(alt.id) + '">' +
+          escapeXml(alt.text) + '</description>' : '';
+      qrSvg += '<rect width="100%" height="100%" fill="white" cx="0" cy="0"/>';
+      qrSvg += '<path d="';
+
+      for (r = 0; r < _this.getModuleCount(); r += 1) {
+        mr = r * cellSize + margin;
+        for (c = 0; c < _this.getModuleCount(); c += 1) {
+          if (_this.isDark(r, c) ) {
+            mc = c*cellSize+margin;
+            qrSvg += 'M' + mc + ',' + mr + rect;
+          }
+        }
+      }
+
+      qrSvg += '" stroke="transparent" fill="black"/>';
+      qrSvg += '</svg>';
+
+      return qrSvg;
+    };
+
+    _this.createDataURL = function(cellSize, margin) {
+
+      cellSize = cellSize || 2;
+      margin = (typeof margin == 'undefined')? cellSize * 4 : margin;
+
+      var size = _this.getModuleCount() * cellSize + margin * 2;
+      var min = margin;
+      var max = size - margin;
+
+      return createDataURL(size, size, function(x, y) {
+        if (min <= x && x < max && min <= y && y < max) {
+          var c = Math.floor( (x - min) / cellSize);
+          var r = Math.floor( (y - min) / cellSize);
+          return _this.isDark(r, c)? 0 : 1;
+        } else {
+          return 1;
+        }
+      } );
+    };
+
+    _this.createImgTag = function(cellSize, margin, alt) {
+
+      cellSize = cellSize || 2;
+      margin = (typeof margin == 'undefined')? cellSize * 4 : margin;
+
+      var size = _this.getModuleCount() * cellSize + margin * 2;
+
+      var img = '';
+      img += '<img';
+      img += '\u0020src="';
+      img += _this.createDataURL(cellSize, margin);
+      img += '"';
+      img += '\u0020width="';
+      img += size;
+      img += '"';
+      img += '\u0020height="';
+      img += size;
+      img += '"';
+      if (alt) {
+        img += '\u0020alt="';
+        img += escapeXml(alt);
+        img += '"';
+      }
+      img += '/>';
+
+      return img;
+    };
+
+    var escapeXml = function(s) {
+      var escaped = '';
+      for (var i = 0; i < s.length; i += 1) {
+        var c = s.charAt(i);
+        switch(c) {
+        case '<': escaped += '&lt;'; break;
+        case '>': escaped += '&gt;'; break;
+        case '&': escaped += '&amp;'; break;
+        case '"': escaped += '&quot;'; break;
+        default : escaped += c; break;
+        }
+      }
+      return escaped;
+    };
+
+    var _createHalfASCII = function(margin) {
+      var cellSize = 1;
+      margin = (typeof margin == 'undefined')? cellSize * 2 : margin;
+
+      var size = _this.getModuleCount() * cellSize + margin * 2;
+      var min = margin;
+      var max = size - margin;
+
+      var y, x, r1, r2, p;
+
+      var blocks = {
+        '██': '█',
+        '█ ': '▀',
+        ' █': '▄',
+        '  ': ' '
+      };
+
+      var blocksLastLineNoMargin = {
+        '██': '▀',
+        '█ ': '▀',
+        ' █': ' ',
+        '  ': ' '
+      };
+
+      var ascii = '';
+      for (y = 0; y < size; y += 2) {
+        r1 = Math.floor((y - min) / cellSize);
+        r2 = Math.floor((y + 1 - min) / cellSize);
+        for (x = 0; x < size; x += 1) {
+          p = '█';
+
+          if (min <= x && x < max && min <= y && y < max && _this.isDark(r1, Math.floor((x - min) / cellSize))) {
+            p = ' ';
+          }
+
+          if (min <= x && x < max && min <= y+1 && y+1 < max && _this.isDark(r2, Math.floor((x - min) / cellSize))) {
+            p += ' ';
+          }
+          else {
+            p += '█';
+          }
+
+          // Output 2 characters per pixel, to create full square. 1 character per pixels gives only half width of square.
+          ascii += (margin < 1 && y+1 >= max) ? blocksLastLineNoMargin[p] : blocks[p];
+        }
+
+        ascii += '\n';
+      }
+
+      if (size % 2 && margin > 0) {
+        return ascii.substring(0, ascii.length - size - 1) + Array(size+1).join('▀');
+      }
+
+      return ascii.substring(0, ascii.length-1);
+    };
+
+    _this.createASCII = function(cellSize, margin) {
+      cellSize = cellSize || 1;
+
+      if (cellSize < 2) {
+        return _createHalfASCII(margin);
+      }
+
+      cellSize -= 1;
+      margin = (typeof margin == 'undefined')? cellSize * 2 : margin;
+
+      var size = _this.getModuleCount() * cellSize + margin * 2;
+      var min = margin;
+      var max = size - margin;
+
+      var y, x, r, p;
+
+      var white = Array(cellSize+1).join('██');
+      var black = Array(cellSize+1).join('  ');
+
+      var ascii = '';
+      var line = '';
+      for (y = 0; y < size; y += 1) {
+        r = Math.floor( (y - min) / cellSize);
+        line = '';
+        for (x = 0; x < size; x += 1) {
+          p = 1;
+
+          if (min <= x && x < max && min <= y && y < max && _this.isDark(r, Math.floor((x - min) / cellSize))) {
+            p = 0;
+          }
+
+          // Output 2 characters per pixel, to create full square. 1 character per pixels gives only half width of square.
+          line += p ? white : black;
+        }
+
+        for (r = 0; r < cellSize; r += 1) {
+          ascii += line + '\n';
+        }
+      }
+
+      return ascii.substring(0, ascii.length-1);
+    };
+
+    _this.renderTo2dContext = function(context, cellSize) {
+      cellSize = cellSize || 2;
+      var length = _this.getModuleCount();
+      for (var row = 0; row < length; row++) {
+        for (var col = 0; col < length; col++) {
+          context.fillStyle = _this.isDark(row, col) ? 'black' : 'white';
+          context.fillRect(row * cellSize, col * cellSize, cellSize, cellSize);
+        }
+      }
+    }
+
+    return _this;
+  };
+
+  //---------------------------------------------------------------------
+  // qrcode.stringToBytes
+  //---------------------------------------------------------------------
+
+  qrcode.stringToBytesFuncs = {
+    'default' : function(s) {
+      var bytes = [];
+      for (var i = 0; i < s.length; i += 1) {
+        var c = s.charCodeAt(i);
+        bytes.push(c & 0xff);
+      }
+      return bytes;
+    }
+  };
+
+  qrcode.stringToBytes = qrcode.stringToBytesFuncs['default'];
+
+  //---------------------------------------------------------------------
+  // qrcode.createStringToBytes
+  //---------------------------------------------------------------------
+
+  /**
+   * @param unicodeData base64 string of byte array.
+   * [16bit Unicode],[16bit Bytes], ...
+   * @param numChars
+   */
+  qrcode.createStringToBytes = function(unicodeData, numChars) {
+
+    // create conversion map.
+
+    var unicodeMap = function() {
+
+      var bin = base64DecodeInputStream(unicodeData);
+      var read = function() {
+        var b = bin.read();
+        if (b == -1) throw 'eof';
+        return b;
+      };
+
+      var count = 0;
+      var unicodeMap = {};
+      while (true) {
+        var b0 = bin.read();
+        if (b0 == -1) break;
+        var b1 = read();
+        var b2 = read();
+        var b3 = read();
+        var k = String.fromCharCode( (b0 << 8) | b1);
+        var v = (b2 << 8) | b3;
+        unicodeMap[k] = v;
+        count += 1;
+      }
+      if (count != numChars) {
+        throw count + ' != ' + numChars;
+      }
+
+      return unicodeMap;
+    }();
+
+    var unknownChar = '?'.charCodeAt(0);
+
+    return function(s) {
+      var bytes = [];
+      for (var i = 0; i < s.length; i += 1) {
+        var c = s.charCodeAt(i);
+        if (c < 128) {
+          bytes.push(c);
+        } else {
+          var b = unicodeMap[s.charAt(i)];
+          if (typeof b == 'number') {
+            if ( (b & 0xff) == b) {
+              // 1byte
+              bytes.push(b);
+            } else {
+              // 2bytes
+              bytes.push(b >>> 8);
+              bytes.push(b & 0xff);
+            }
+          } else {
+            bytes.push(unknownChar);
+          }
+        }
+      }
+      return bytes;
+    };
+  };
+
+  //---------------------------------------------------------------------
+  // QRMode
+  //---------------------------------------------------------------------
+
+  var QRMode = {
+    MODE_NUMBER :    1 << 0,
+    MODE_ALPHA_NUM : 1 << 1,
+    MODE_8BIT_BYTE : 1 << 2,
+    MODE_KANJI :     1 << 3
+  };
+
+  //---------------------------------------------------------------------
+  // QRErrorCorrectionLevel
+  //---------------------------------------------------------------------
+
+  var QRErrorCorrectionLevel = {
+    L : 1,
+    M : 0,
+    Q : 3,
+    H : 2
+  };
+
+  //---------------------------------------------------------------------
+  // QRMaskPattern
+  //---------------------------------------------------------------------
+
+  var QRMaskPattern = {
+    PATTERN000 : 0,
+    PATTERN001 : 1,
+    PATTERN010 : 2,
+    PATTERN011 : 3,
+    PATTERN100 : 4,
+    PATTERN101 : 5,
+    PATTERN110 : 6,
+    PATTERN111 : 7
+  };
+
+  //---------------------------------------------------------------------
+  // QRUtil
+  //---------------------------------------------------------------------
+
+  var QRUtil = function() {
+
+    var PATTERN_POSITION_TABLE = [
+      [],
+      [6, 18],
+      [6, 22],
+      [6, 26],
+      [6, 30],
+      [6, 34],
+      [6, 22, 38],
+      [6, 24, 42],
+      [6, 26, 46],
+      [6, 28, 50],
+      [6, 30, 54],
+      [6, 32, 58],
+      [6, 34, 62],
+      [6, 26, 46, 66],
+      [6, 26, 48, 70],
+      [6, 26, 50, 74],
+      [6, 30, 54, 78],
+      [6, 30, 56, 82],
+      [6, 30, 58, 86],
+      [6, 34, 62, 90],
+      [6, 28, 50, 72, 94],
+      [6, 26, 50, 74, 98],
+      [6, 30, 54, 78, 102],
+      [6, 28, 54, 80, 106],
+      [6, 32, 58, 84, 110],
+      [6, 30, 58, 86, 114],
+      [6, 34, 62, 90, 118],
+      [6, 26, 50, 74, 98, 122],
+      [6, 30, 54, 78, 102, 126],
+      [6, 26, 52, 78, 104, 130],
+      [6, 30, 56, 82, 108, 134],
+      [6, 34, 60, 86, 112, 138],
+      [6, 30, 58, 86, 114, 142],
+      [6, 34, 62, 90, 118, 146],
+      [6, 30, 54, 78, 102, 126, 150],
+      [6, 24, 50, 76, 102, 128, 154],
+      [6, 28, 54, 80, 106, 132, 158],
+      [6, 32, 58, 84, 110, 136, 162],
+      [6, 26, 54, 82, 110, 138, 166],
+      [6, 30, 58, 86, 114, 142, 170]
+    ];
+    var G15 = (1 << 10) | (1 << 8) | (1 << 5) | (1 << 4) | (1 << 2) | (1 << 1) | (1 << 0);
+    var G18 = (1 << 12) | (1 << 11) | (1 << 10) | (1 << 9) | (1 << 8) | (1 << 5) | (1 << 2) | (1 << 0);
+    var G15_MASK = (1 << 14) | (1 << 12) | (1 << 10) | (1 << 4) | (1 << 1);
+
+    var _this = {};
+
+    var getBCHDigit = function(data) {
+      var digit = 0;
+      while (data != 0) {
+        digit += 1;
+        data >>>= 1;
+      }
+      return digit;
+    };
+
+    _this.getBCHTypeInfo = function(data) {
+      var d = data << 10;
+      while (getBCHDigit(d) - getBCHDigit(G15) >= 0) {
+        d ^= (G15 << (getBCHDigit(d) - getBCHDigit(G15) ) );
+      }
+      return ( (data << 10) | d) ^ G15_MASK;
+    };
+
+    _this.getBCHTypeNumber = function(data) {
+      var d = data << 12;
+      while (getBCHDigit(d) - getBCHDigit(G18) >= 0) {
+        d ^= (G18 << (getBCHDigit(d) - getBCHDigit(G18) ) );
+      }
+      return (data << 12) | d;
+    };
+
+    _this.getPatternPosition = function(typeNumber) {
+      return PATTERN_POSITION_TABLE[typeNumber - 1];
+    };
+
+    _this.getMaskFunction = function(maskPattern) {
+
+      switch (maskPattern) {
+
+      case QRMaskPattern.PATTERN000 :
+        return function(i, j) { return (i + j) % 2 == 0; };
+      case QRMaskPattern.PATTERN001 :
+        return function(i, j) { return i % 2 == 0; };
+      case QRMaskPattern.PATTERN010 :
+        return function(i, j) { return j % 3 == 0; };
+      case QRMaskPattern.PATTERN011 :
+        return function(i, j) { return (i + j) % 3 == 0; };
+      case QRMaskPattern.PATTERN100 :
+        return function(i, j) { return (Math.floor(i / 2) + Math.floor(j / 3) ) % 2 == 0; };
+      case QRMaskPattern.PATTERN101 :
+        return function(i, j) { return (i * j) % 2 + (i * j) % 3 == 0; };
+      case QRMaskPattern.PATTERN110 :
+        return function(i, j) { return ( (i * j) % 2 + (i * j) % 3) % 2 == 0; };
+      case QRMaskPattern.PATTERN111 :
+        return function(i, j) { return ( (i * j) % 3 + (i + j) % 2) % 2 == 0; };
+
+      default :
+        throw 'bad maskPattern:' + maskPattern;
+      }
+    };
+
+    _this.getErrorCorrectPolynomial = function(errorCorrectLength) {
+      var a = qrPolynomial([1], 0);
+      for (var i = 0; i < errorCorrectLength; i += 1) {
+        a = a.multiply(qrPolynomial([1, QRMath.gexp(i)], 0) );
+      }
+      return a;
+    };
+
+    _this.getLengthInBits = function(mode, type) {
+
+      if (1 <= type && type < 10) {
+
+        // 1 - 9
+
+        switch(mode) {
+        case QRMode.MODE_NUMBER    : return 10;
+        case QRMode.MODE_ALPHA_NUM : return 9;
+        case QRMode.MODE_8BIT_BYTE : return 8;
+        case QRMode.MODE_KANJI     : return 8;
+        default :
+          throw 'mode:' + mode;
+        }
+
+      } else if (type < 27) {
+
+        // 10 - 26
+
+        switch(mode) {
+        case QRMode.MODE_NUMBER    : return 12;
+        case QRMode.MODE_ALPHA_NUM : return 11;
+        case QRMode.MODE_8BIT_BYTE : return 16;
+        case QRMode.MODE_KANJI     : return 10;
+        default :
+          throw 'mode:' + mode;
+        }
+
+      } else if (type < 41) {
+
+        // 27 - 40
+
+        switch(mode) {
+        case QRMode.MODE_NUMBER    : return 14;
+        case QRMode.MODE_ALPHA_NUM : return 13;
+        case QRMode.MODE_8BIT_BYTE : return 16;
+        case QRMode.MODE_KANJI     : return 12;
+        default :
+          throw 'mode:' + mode;
+        }
+
+      } else {
+        throw 'type:' + type;
+      }
+    };
+
+    _this.getLostPoint = function(qrcode) {
+
+      var moduleCount = qrcode.getModuleCount();
+
+      var lostPoint = 0;
+
+      // LEVEL1
+
+      for (var row = 0; row < moduleCount; row += 1) {
+        for (var col = 0; col < moduleCount; col += 1) {
+
+          var sameCount = 0;
+          var dark = qrcode.isDark(row, col);
+
+          for (var r = -1; r <= 1; r += 1) {
+
+            if (row + r < 0 || moduleCount <= row + r) {
+              continue;
+            }
+
+            for (var c = -1; c <= 1; c += 1) {
+
+              if (col + c < 0 || moduleCount <= col + c) {
+                continue;
+              }
+
+              if (r == 0 && c == 0) {
+                continue;
+              }
+
+              if (dark == qrcode.isDark(row + r, col + c) ) {
+                sameCount += 1;
+              }
+            }
+          }
+
+          if (sameCount > 5) {
+            lostPoint += (3 + sameCount - 5);
+          }
+        }
+      };
+
+      // LEVEL2
+
+      for (var row = 0; row < moduleCount - 1; row += 1) {
+        for (var col = 0; col < moduleCount - 1; col += 1) {
+          var count = 0;
+          if (qrcode.isDark(row, col) ) count += 1;
+          if (qrcode.isDark(row + 1, col) ) count += 1;
+          if (qrcode.isDark(row, col + 1) ) count += 1;
+          if (qrcode.isDark(row + 1, col + 1) ) count += 1;
+          if (count == 0 || count == 4) {
+            lostPoint += 3;
+          }
+        }
+      }
+
+      // LEVEL3
+
+      for (var row = 0; row < moduleCount; row += 1) {
+        for (var col = 0; col < moduleCount - 6; col += 1) {
+          if (qrcode.isDark(row, col)
+              && !qrcode.isDark(row, col + 1)
+              &&  qrcode.isDark(row, col + 2)
+              &&  qrcode.isDark(row, col + 3)
+              &&  qrcode.isDark(row, col + 4)
+              && !qrcode.isDark(row, col + 5)
+              &&  qrcode.isDark(row, col + 6) ) {
+            lostPoint += 40;
+          }
+        }
+      }
+
+      for (var col = 0; col < moduleCount; col += 1) {
+        for (var row = 0; row < moduleCount - 6; row += 1) {
+          if (qrcode.isDark(row, col)
+              && !qrcode.isDark(row + 1, col)
+              &&  qrcode.isDark(row + 2, col)
+              &&  qrcode.isDark(row + 3, col)
+              &&  qrcode.isDark(row + 4, col)
+              && !qrcode.isDark(row + 5, col)
+              &&  qrcode.isDark(row + 6, col) ) {
+            lostPoint += 40;
+          }
+        }
+      }
+
+      // LEVEL4
+
+      var darkCount = 0;
+
+      for (var col = 0; col < moduleCount; col += 1) {
+        for (var row = 0; row < moduleCount; row += 1) {
+          if (qrcode.isDark(row, col) ) {
+            darkCount += 1;
+          }
+        }
+      }
+
+      var ratio = Math.abs(100 * darkCount / moduleCount / moduleCount - 50) / 5;
+      lostPoint += ratio * 10;
+
+      return lostPoint;
+    };
+
+    return _this;
+  }();
+
+  //---------------------------------------------------------------------
+  // QRMath
+  //---------------------------------------------------------------------
+
+  var QRMath = function() {
+
+    var EXP_TABLE = new Array(256);
+    var LOG_TABLE = new Array(256);
+
+    // initialize tables
+    for (var i = 0; i < 8; i += 1) {
+      EXP_TABLE[i] = 1 << i;
+    }
+    for (var i = 8; i < 256; i += 1) {
+      EXP_TABLE[i] = EXP_TABLE[i - 4]
+        ^ EXP_TABLE[i - 5]
+        ^ EXP_TABLE[i - 6]
+        ^ EXP_TABLE[i - 8];
+    }
+    for (var i = 0; i < 255; i += 1) {
+      LOG_TABLE[EXP_TABLE[i] ] = i;
+    }
+
+    var _this = {};
+
+    _this.glog = function(n) {
+
+      if (n < 1) {
+        throw 'glog(' + n + ')';
+      }
+
+      return LOG_TABLE[n];
+    };
+
+    _this.gexp = function(n) {
+
+      while (n < 0) {
+        n += 255;
+      }
+
+      while (n >= 256) {
+        n -= 255;
+      }
+
+      return EXP_TABLE[n];
+    };
+
+    return _this;
+  }();
+
+  //---------------------------------------------------------------------
+  // qrPolynomial
+  //---------------------------------------------------------------------
+
+  function qrPolynomial(num, shift) {
+
+    if (typeof num.length == 'undefined') {
+      throw num.length + '/' + shift;
+    }
+
+    var _num = function() {
+      var offset = 0;
+      while (offset < num.length && num[offset] == 0) {
+        offset += 1;
+      }
+      var _num = new Array(num.length - offset + shift);
+      for (var i = 0; i < num.length - offset; i += 1) {
+        _num[i] = num[i + offset];
+      }
+      return _num;
+    }();
+
+    var _this = {};
+
+    _this.getAt = function(index) {
+      return _num[index];
+    };
+
+    _this.getLength = function() {
+      return _num.length;
+    };
+
+    _this.multiply = function(e) {
+
+      var num = new Array(_this.getLength() + e.getLength() - 1);
+
+      for (var i = 0; i < _this.getLength(); i += 1) {
+        for (var j = 0; j < e.getLength(); j += 1) {
+          num[i + j] ^= QRMath.gexp(QRMath.glog(_this.getAt(i) ) + QRMath.glog(e.getAt(j) ) );
+        }
+      }
+
+      return qrPolynomial(num, 0);
+    };
+
+    _this.mod = function(e) {
+
+      if (_this.getLength() - e.getLength() < 0) {
+        return _this;
+      }
+
+      var ratio = QRMath.glog(_this.getAt(0) ) - QRMath.glog(e.getAt(0) );
+
+      var num = new Array(_this.getLength() );
+      for (var i = 0; i < _this.getLength(); i += 1) {
+        num[i] = _this.getAt(i);
+      }
+
+      for (var i = 0; i < e.getLength(); i += 1) {
+        num[i] ^= QRMath.gexp(QRMath.glog(e.getAt(i) ) + ratio);
+      }
+
+      // recursive call
+      return qrPolynomial(num, 0).mod(e);
+    };
+
+    return _this;
+  };
+
+  //---------------------------------------------------------------------
+  // QRRSBlock
+  //---------------------------------------------------------------------
+
+  var QRRSBlock = function() {
+
+    var RS_BLOCK_TABLE = [
+
+      // L
+      // M
+      // Q
+      // H
+
+      // 1
+      [1, 26, 19],
+      [1, 26, 16],
+      [1, 26, 13],
+      [1, 26, 9],
+
+      // 2
+      [1, 44, 34],
+      [1, 44, 28],
+      [1, 44, 22],
+      [1, 44, 16],
+
+      // 3
+      [1, 70, 55],
+      [1, 70, 44],
+      [2, 35, 17],
+      [2, 35, 13],
+
+      // 4
+      [1, 100, 80],
+      [2, 50, 32],
+      [2, 50, 24],
+      [4, 25, 9],
+
+      // 5
+      [1, 134, 108],
+      [2, 67, 43],
+      [2, 33, 15, 2, 34, 16],
+      [2, 33, 11, 2, 34, 12],
+
+      // 6
+      [2, 86, 68],
+      [4, 43, 27],
+      [4, 43, 19],
+      [4, 43, 15],
+
+      // 7
+      [2, 98, 78],
+      [4, 49, 31],
+      [2, 32, 14, 4, 33, 15],
+      [4, 39, 13, 1, 40, 14],
+
+      // 8
+      [2, 121, 97],
+      [2, 60, 38, 2, 61, 39],
+      [4, 40, 18, 2, 41, 19],
+      [4, 40, 14, 2, 41, 15],
+
+      // 9
+      [2, 146, 116],
+      [3, 58, 36, 2, 59, 37],
+      [4, 36, 16, 4, 37, 17],
+      [4, 36, 12, 4, 37, 13],
+
+      // 10
+      [2, 86, 68, 2, 87, 69],
+      [4, 69, 43, 1, 70, 44],
+      [6, 43, 19, 2, 44, 20],
+      [6, 43, 15, 2, 44, 16],
+
+      // 11
+      [4, 101, 81],
+      [1, 80, 50, 4, 81, 51],
+      [4, 50, 22, 4, 51, 23],
+      [3, 36, 12, 8, 37, 13],
+
+      // 12
+      [2, 116, 92, 2, 117, 93],
+      [6, 58, 36, 2, 59, 37],
+      [4, 46, 20, 6, 47, 21],
+      [7, 42, 14, 4, 43, 15],
+
+      // 13
+      [4, 133, 107],
+      [8, 59, 37, 1, 60, 38],
+      [8, 44, 20, 4, 45, 21],
+      [12, 33, 11, 4, 34, 12],
+
+      // 14
+      [3, 145, 115, 1, 146, 116],
+      [4, 64, 40, 5, 65, 41],
+      [11, 36, 16, 5, 37, 17],
+      [11, 36, 12, 5, 37, 13],
+
+      // 15
+      [5, 109, 87, 1, 110, 88],
+      [5, 65, 41, 5, 66, 42],
+      [5, 54, 24, 7, 55, 25],
+      [11, 36, 12, 7, 37, 13],
+
+      // 16
+      [5, 122, 98, 1, 123, 99],
+      [7, 73, 45, 3, 74, 46],
+      [15, 43, 19, 2, 44, 20],
+      [3, 45, 15, 13, 46, 16],
+
+      // 17
+      [1, 135, 107, 5, 136, 108],
+      [10, 74, 46, 1, 75, 47],
+      [1, 50, 22, 15, 51, 23],
+      [2, 42, 14, 17, 43, 15],
+
+      // 18
+      [5, 150, 120, 1, 151, 121],
+      [9, 69, 43, 4, 70, 44],
+      [17, 50, 22, 1, 51, 23],
+      [2, 42, 14, 19, 43, 15],
+
+      // 19
+      [3, 141, 113, 4, 142, 114],
+      [3, 70, 44, 11, 71, 45],
+      [17, 47, 21, 4, 48, 22],
+      [9, 39, 13, 16, 40, 14],
+
+      // 20
+      [3, 135, 107, 5, 136, 108],
+      [3, 67, 41, 13, 68, 42],
+      [15, 54, 24, 5, 55, 25],
+      [15, 43, 15, 10, 44, 16],
+
+      // 21
+      [4, 144, 116, 4, 145, 117],
+      [17, 68, 42],
+      [17, 50, 22, 6, 51, 23],
+      [19, 46, 16, 6, 47, 17],
+
+      // 22
+      [2, 139, 111, 7, 140, 112],
+      [17, 74, 46],
+      [7, 54, 24, 16, 55, 25],
+      [34, 37, 13],
+
+      // 23
+      [4, 151, 121, 5, 152, 122],
+      [4, 75, 47, 14, 76, 48],
+      [11, 54, 24, 14, 55, 25],
+      [16, 45, 15, 14, 46, 16],
+
+      // 24
+      [6, 147, 117, 4, 148, 118],
+      [6, 73, 45, 14, 74, 46],
+      [11, 54, 24, 16, 55, 25],
+      [30, 46, 16, 2, 47, 17],
+
+      // 25
+      [8, 132, 106, 4, 133, 107],
+      [8, 75, 47, 13, 76, 48],
+      [7, 54, 24, 22, 55, 25],
+      [22, 45, 15, 13, 46, 16],
+
+      // 26
+      [10, 142, 114, 2, 143, 115],
+      [19, 74, 46, 4, 75, 47],
+      [28, 50, 22, 6, 51, 23],
+      [33, 46, 16, 4, 47, 17],
+
+      // 27
+      [8, 152, 122, 4, 153, 123],
+      [22, 73, 45, 3, 74, 46],
+      [8, 53, 23, 26, 54, 24],
+      [12, 45, 15, 28, 46, 16],
+
+      // 28
+      [3, 147, 117, 10, 148, 118],
+      [3, 73, 45, 23, 74, 46],
+      [4, 54, 24, 31, 55, 25],
+      [11, 45, 15, 31, 46, 16],
+
+      // 29
+      [7, 146, 116, 7, 147, 117],
+      [21, 73, 45, 7, 74, 46],
+      [1, 53, 23, 37, 54, 24],
+      [19, 45, 15, 26, 46, 16],
+
+      // 30
+      [5, 145, 115, 10, 146, 116],
+      [19, 75, 47, 10, 76, 48],
+      [15, 54, 24, 25, 55, 25],
+      [23, 45, 15, 25, 46, 16],
+
+      // 31
+      [13, 145, 115, 3, 146, 116],
+      [2, 74, 46, 29, 75, 47],
+      [42, 54, 24, 1, 55, 25],
+      [23, 45, 15, 28, 46, 16],
+
+      // 32
+      [17, 145, 115],
+      [10, 74, 46, 23, 75, 47],
+      [10, 54, 24, 35, 55, 25],
+      [19, 45, 15, 35, 46, 16],
+
+      // 33
+      [17, 145, 115, 1, 146, 116],
+      [14, 74, 46, 21, 75, 47],
+      [29, 54, 24, 19, 55, 25],
+      [11, 45, 15, 46, 46, 16],
+
+      // 34
+      [13, 145, 115, 6, 146, 116],
+      [14, 74, 46, 23, 75, 47],
+      [44, 54, 24, 7, 55, 25],
+      [59, 46, 16, 1, 47, 17],
+
+      // 35
+      [12, 151, 121, 7, 152, 122],
+      [12, 75, 47, 26, 76, 48],
+      [39, 54, 24, 14, 55, 25],
+      [22, 45, 15, 41, 46, 16],
+
+      // 36
+      [6, 151, 121, 14, 152, 122],
+      [6, 75, 47, 34, 76, 48],
+      [46, 54, 24, 10, 55, 25],
+      [2, 45, 15, 64, 46, 16],
+
+      // 37
+      [17, 152, 122, 4, 153, 123],
+      [29, 74, 46, 14, 75, 47],
+      [49, 54, 24, 10, 55, 25],
+      [24, 45, 15, 46, 46, 16],
+
+      // 38
+      [4, 152, 122, 18, 153, 123],
+      [13, 74, 46, 32, 75, 47],
+      [48, 54, 24, 14, 55, 25],
+      [42, 45, 15, 32, 46, 16],
+
+      // 39
+      [20, 147, 117, 4, 148, 118],
+      [40, 75, 47, 7, 76, 48],
+      [43, 54, 24, 22, 55, 25],
+      [10, 45, 15, 67, 46, 16],
+
+      // 40
+      [19, 148, 118, 6, 149, 119],
+      [18, 75, 47, 31, 76, 48],
+      [34, 54, 24, 34, 55, 25],
+      [20, 45, 15, 61, 46, 16]
+    ];
+
+    var qrRSBlock = function(totalCount, dataCount) {
+      var _this = {};
+      _this.totalCount = totalCount;
+      _this.dataCount = dataCount;
+      return _this;
+    };
+
+    var _this = {};
+
+    var getRsBlockTable = function(typeNumber, errorCorrectionLevel) {
+
+      switch(errorCorrectionLevel) {
+      case QRErrorCorrectionLevel.L :
+        return RS_BLOCK_TABLE[(typeNumber - 1) * 4 + 0];
+      case QRErrorCorrectionLevel.M :
+        return RS_BLOCK_TABLE[(typeNumber - 1) * 4 + 1];
+      case QRErrorCorrectionLevel.Q :
+        return RS_BLOCK_TABLE[(typeNumber - 1) * 4 + 2];
+      case QRErrorCorrectionLevel.H :
+        return RS_BLOCK_TABLE[(typeNumber - 1) * 4 + 3];
+      default :
+        return undefined;
+      }
+    };
+
+    _this.getRSBlocks = function(typeNumber, errorCorrectionLevel) {
+
+      var rsBlock = getRsBlockTable(typeNumber, errorCorrectionLevel);
+
+      if (typeof rsBlock == 'undefined') {
+        throw 'bad rs block @ typeNumber:' + typeNumber +
+            '/errorCorrectionLevel:' + errorCorrectionLevel;
+      }
+
+      var length = rsBlock.length / 3;
+
+      var list = [];
+
+      for (var i = 0; i < length; i += 1) {
+
+        var count = rsBlock[i * 3 + 0];
+        var totalCount = rsBlock[i * 3 + 1];
+        var dataCount = rsBlock[i * 3 + 2];
+
+        for (var j = 0; j < count; j += 1) {
+          list.push(qrRSBlock(totalCount, dataCount) );
+        }
+      }
+
+      return list;
+    };
+
+    return _this;
+  }();
+
+  //---------------------------------------------------------------------
+  // qrBitBuffer
+  //---------------------------------------------------------------------
+
+  var qrBitBuffer = function() {
+
+    var _buffer = [];
+    var _length = 0;
+
+    var _this = {};
+
+    _this.getBuffer = function() {
+      return _buffer;
+    };
+
+    _this.getAt = function(index) {
+      var bufIndex = Math.floor(index / 8);
+      return ( (_buffer[bufIndex] >>> (7 - index % 8) ) & 1) == 1;
+    };
+
+    _this.put = function(num, length) {
+      for (var i = 0; i < length; i += 1) {
+        _this.putBit( ( (num >>> (length - i - 1) ) & 1) == 1);
+      }
+    };
+
+    _this.getLengthInBits = function() {
+      return _length;
+    };
+
+    _this.putBit = function(bit) {
+
+      var bufIndex = Math.floor(_length / 8);
+      if (_buffer.length <= bufIndex) {
+        _buffer.push(0);
+      }
+
+      if (bit) {
+        _buffer[bufIndex] |= (0x80 >>> (_length % 8) );
+      }
+
+      _length += 1;
+    };
+
+    return _this;
+  };
+
+  //---------------------------------------------------------------------
+  // qrNumber
+  //---------------------------------------------------------------------
+
+  var qrNumber = function(data) {
+
+    var _mode = QRMode.MODE_NUMBER;
+    var _data = data;
+
+    var _this = {};
+
+    _this.getMode = function() {
+      return _mode;
+    };
+
+    _this.getLength = function(buffer) {
+      return _data.length;
+    };
+
+    _this.write = function(buffer) {
+
+      var data = _data;
+
+      var i = 0;
+
+      while (i + 2 < data.length) {
+        buffer.put(strToNum(data.substring(i, i + 3) ), 10);
+        i += 3;
+      }
+
+      if (i < data.length) {
+        if (data.length - i == 1) {
+          buffer.put(strToNum(data.substring(i, i + 1) ), 4);
+        } else if (data.length - i == 2) {
+          buffer.put(strToNum(data.substring(i, i + 2) ), 7);
+        }
+      }
+    };
+
+    var strToNum = function(s) {
+      var num = 0;
+      for (var i = 0; i < s.length; i += 1) {
+        num = num * 10 + chatToNum(s.charAt(i) );
+      }
+      return num;
+    };
+
+    var chatToNum = function(c) {
+      if ('0' <= c && c <= '9') {
+        return c.charCodeAt(0) - '0'.charCodeAt(0);
+      }
+      throw 'illegal char :' + c;
+    };
+
+    return _this;
+  };
+
+  //---------------------------------------------------------------------
+  // qrAlphaNum
+  //---------------------------------------------------------------------
+
+  var qrAlphaNum = function(data) {
+
+    var _mode = QRMode.MODE_ALPHA_NUM;
+    var _data = data;
+
+    var _this = {};
+
+    _this.getMode = function() {
+      return _mode;
+    };
+
+    _this.getLength = function(buffer) {
+      return _data.length;
+    };
+
+    _this.write = function(buffer) {
+
+      var s = _data;
+
+      var i = 0;
+
+      while (i + 1 < s.length) {
+        buffer.put(
+          getCode(s.charAt(i) ) * 45 +
+          getCode(s.charAt(i + 1) ), 11);
+        i += 2;
+      }
+
+      if (i < s.length) {
+        buffer.put(getCode(s.charAt(i) ), 6);
+      }
+    };
+
+    var getCode = function(c) {
+
+      if ('0' <= c && c <= '9') {
+        return c.charCodeAt(0) - '0'.charCodeAt(0);
+      } else if ('A' <= c && c <= 'Z') {
+        return c.charCodeAt(0) - 'A'.charCodeAt(0) + 10;
+      } else {
+        switch (c) {
+        case ' ' : return 36;
+        case '$' : return 37;
+        case '%' : return 38;
+        case '*' : return 39;
+        case '+' : return 40;
+        case '-' : return 41;
+        case '.' : return 42;
+        case '/' : return 43;
+        case ':' : return 44;
+        default :
+          throw 'illegal char :' + c;
+        }
+      }
+    };
+
+    return _this;
+  };
+
+  //---------------------------------------------------------------------
+  // qr8BitByte
+  //---------------------------------------------------------------------
+
+  var qr8BitByte = function(data) {
+
+    var _mode = QRMode.MODE_8BIT_BYTE;
+    var _data = data;
+    var _bytes = qrcode.stringToBytes(data);
+
+    var _this = {};
+
+    _this.getMode = function() {
+      return _mode;
+    };
+
+    _this.getLength = function(buffer) {
+      return _bytes.length;
+    };
+
+    _this.write = function(buffer) {
+      for (var i = 0; i < _bytes.length; i += 1) {
+        buffer.put(_bytes[i], 8);
+      }
+    };
+
+    return _this;
+  };
+
+  //---------------------------------------------------------------------
+  // qrKanji
+  //---------------------------------------------------------------------
+
+  var qrKanji = function(data) {
+
+    var _mode = QRMode.MODE_KANJI;
+    var _data = data;
+
+    var stringToBytes = qrcode.stringToBytesFuncs['SJIS'];
+    if (!stringToBytes) {
+      throw 'sjis not supported.';
+    }
+    !function(c, code) {
+      // self test for sjis support.
+      var test = stringToBytes(c);
+      if (test.length != 2 || ( (test[0] << 8) | test[1]) != code) {
+        throw 'sjis not supported.';
+      }
+    }('\u53cb', 0x9746);
+
+    var _bytes = stringToBytes(data);
+
+    var _this = {};
+
+    _this.getMode = function() {
+      return _mode;
+    };
+
+    _this.getLength = function(buffer) {
+      return ~~(_bytes.length / 2);
+    };
+
+    _this.write = function(buffer) {
+
+      var data = _bytes;
+
+      var i = 0;
+
+      while (i + 1 < data.length) {
+
+        var c = ( (0xff & data[i]) << 8) | (0xff & data[i + 1]);
+
+        if (0x8140 <= c && c <= 0x9FFC) {
+          c -= 0x8140;
+        } else if (0xE040 <= c && c <= 0xEBBF) {
+          c -= 0xC140;
+        } else {
+          throw 'illegal char at ' + (i + 1) + '/' + c;
+        }
+
+        c = ( (c >>> 8) & 0xff) * 0xC0 + (c & 0xff);
+
+        buffer.put(c, 13);
+
+        i += 2;
+      }
+
+      if (i < data.length) {
+        throw 'illegal char at ' + (i + 1);
+      }
+    };
+
+    return _this;
+  };
+
+  //=====================================================================
+  // GIF Support etc.
+  //
+
+  //---------------------------------------------------------------------
+  // byteArrayOutputStream
+  //---------------------------------------------------------------------
+
+  var byteArrayOutputStream = function() {
+
+    var _bytes = [];
+
+    var _this = {};
+
+    _this.writeByte = function(b) {
+      _bytes.push(b & 0xff);
+    };
+
+    _this.writeShort = function(i) {
+      _this.writeByte(i);
+      _this.writeByte(i >>> 8);
+    };
+
+    _this.writeBytes = function(b, off, len) {
+      off = off || 0;
+      len = len || b.length;
+      for (var i = 0; i < len; i += 1) {
+        _this.writeByte(b[i + off]);
+      }
+    };
+
+    _this.writeString = function(s) {
+      for (var i = 0; i < s.length; i += 1) {
+        _this.writeByte(s.charCodeAt(i) );
+      }
+    };
+
+    _this.toByteArray = function() {
+      return _bytes;
+    };
+
+    _this.toString = function() {
+      var s = '';
+      s += '[';
+      for (var i = 0; i < _bytes.length; i += 1) {
+        if (i > 0) {
+          s += ',';
+        }
+        s += _bytes[i];
+      }
+      s += ']';
+      return s;
+    };
+
+    return _this;
+  };
+
+  //---------------------------------------------------------------------
+  // base64EncodeOutputStream
+  //---------------------------------------------------------------------
+
+  var base64EncodeOutputStream = function() {
+
+    var _buffer = 0;
+    var _buflen = 0;
+    var _length = 0;
+    var _base64 = '';
+
+    var _this = {};
+
+    var writeEncoded = function(b) {
+      _base64 += String.fromCharCode(encode(b & 0x3f) );
+    };
+
+    var encode = function(n) {
+      if (n < 0) {
+        // error.
+      } else if (n < 26) {
+        return 0x41 + n;
+      } else if (n < 52) {
+        return 0x61 + (n - 26);
+      } else if (n < 62) {
+        return 0x30 + (n - 52);
+      } else if (n == 62) {
+        return 0x2b;
+      } else if (n == 63) {
+        return 0x2f;
+      }
+      throw 'n:' + n;
+    };
+
+    _this.writeByte = function(n) {
+
+      _buffer = (_buffer << 8) | (n & 0xff);
+      _buflen += 8;
+      _length += 1;
+
+      while (_buflen >= 6) {
+        writeEncoded(_buffer >>> (_buflen - 6) );
+        _buflen -= 6;
+      }
+    };
+
+    _this.flush = function() {
+
+      if (_buflen > 0) {
+        writeEncoded(_buffer << (6 - _buflen) );
+        _buffer = 0;
+        _buflen = 0;
+      }
+
+      if (_length % 3 != 0) {
+        // padding
+        var padlen = 3 - _length % 3;
+        for (var i = 0; i < padlen; i += 1) {
+          _base64 += '=';
+        }
+      }
+    };
+
+    _this.toString = function() {
+      return _base64;
+    };
+
+    return _this;
+  };
+
+  //---------------------------------------------------------------------
+  // base64DecodeInputStream
+  //---------------------------------------------------------------------
+
+  var base64DecodeInputStream = function(str) {
+
+    var _str = str;
+    var _pos = 0;
+    var _buffer = 0;
+    var _buflen = 0;
+
+    var _this = {};
+
+    _this.read = function() {
+
+      while (_buflen < 8) {
+
+        if (_pos >= _str.length) {
+          if (_buflen == 0) {
+            return -1;
+          }
+          throw 'unexpected end of file./' + _buflen;
+        }
+
+        var c = _str.charAt(_pos);
+        _pos += 1;
+
+        if (c == '=') {
+          _buflen = 0;
+          return -1;
+        } else if (c.match(/^\s$/) ) {
+          // ignore if whitespace.
+          continue;
+        }
+
+        _buffer = (_buffer << 6) | decode(c.charCodeAt(0) );
+        _buflen += 6;
+      }
+
+      var n = (_buffer >>> (_buflen - 8) ) & 0xff;
+      _buflen -= 8;
+      return n;
+    };
+
+    var decode = function(c) {
+      if (0x41 <= c && c <= 0x5a) {
+        return c - 0x41;
+      } else if (0x61 <= c && c <= 0x7a) {
+        return c - 0x61 + 26;
+      } else if (0x30 <= c && c <= 0x39) {
+        return c - 0x30 + 52;
+      } else if (c == 0x2b) {
+        return 62;
+      } else if (c == 0x2f) {
+        return 63;
+      } else {
+        throw 'c:' + c;
+      }
+    };
+
+    return _this;
+  };
+
+  //---------------------------------------------------------------------
+  // gifImage (B/W)
+  //---------------------------------------------------------------------
+
+  var gifImage = function(width, height) {
+
+    var _width = width;
+    var _height = height;
+    var _data = new Array(width * height);
+
+    var _this = {};
+
+    _this.setPixel = function(x, y, pixel) {
+      _data[y * _width + x] = pixel;
+    };
+
+    _this.write = function(out) {
+
+      //---------------------------------
+      // GIF Signature
+
+      out.writeString('GIF87a');
+
+      //---------------------------------
+      // Screen Descriptor
+
+      out.writeShort(_width);
+      out.writeShort(_height);
+
+      out.writeByte(0x80); // 2bit
+      out.writeByte(0);
+      out.writeByte(0);
+
+      //---------------------------------
+      // Global Color Map
+
+      // black
+      out.writeByte(0x00);
+      out.writeByte(0x00);
+      out.writeByte(0x00);
+
+      // white
+      out.writeByte(0xff);
+      out.writeByte(0xff);
+      out.writeByte(0xff);
+
+      //---------------------------------
+      // Image Descriptor
+
+      out.writeString(',');
+      out.writeShort(0);
+      out.writeShort(0);
+      out.writeShort(_width);
+      out.writeShort(_height);
+      out.writeByte(0);
+
+      //---------------------------------
+      // Local Color Map
+
+      //---------------------------------
+      // Raster Data
+
+      var lzwMinCodeSize = 2;
+      var raster = getLZWRaster(lzwMinCodeSize);
+
+      out.writeByte(lzwMinCodeSize);
+
+      var offset = 0;
+
+      while (raster.length - offset > 255) {
+        out.writeByte(255);
+        out.writeBytes(raster, offset, 255);
+        offset += 255;
+      }
+
+      out.writeByte(raster.length - offset);
+      out.writeBytes(raster, offset, raster.length - offset);
+      out.writeByte(0x00);
+
+      //---------------------------------
+      // GIF Terminator
+      out.writeString(';');
+    };
+
+    var bitOutputStream = function(out) {
+
+      var _out = out;
+      var _bitLength = 0;
+      var _bitBuffer = 0;
+
+      var _this = {};
+
+      _this.write = function(data, length) {
+
+        if ( (data >>> length) != 0) {
+          throw 'length over';
+        }
+
+        while (_bitLength + length >= 8) {
+          _out.writeByte(0xff & ( (data << _bitLength) | _bitBuffer) );
+          length -= (8 - _bitLength);
+          data >>>= (8 - _bitLength);
+          _bitBuffer = 0;
+          _bitLength = 0;
+        }
+
+        _bitBuffer = (data << _bitLength) | _bitBuffer;
+        _bitLength = _bitLength + length;
+      };
+
+      _this.flush = function() {
+        if (_bitLength > 0) {
+          _out.writeByte(_bitBuffer);
+        }
+      };
+
+      return _this;
+    };
+
+    var getLZWRaster = function(lzwMinCodeSize) {
+
+      var clearCode = 1 << lzwMinCodeSize;
+      var endCode = (1 << lzwMinCodeSize) + 1;
+      var bitLength = lzwMinCodeSize + 1;
+
+      // Setup LZWTable
+      var table = lzwTable();
+
+      for (var i = 0; i < clearCode; i += 1) {
+        table.add(String.fromCharCode(i) );
+      }
+      table.add(String.fromCharCode(clearCode) );
+      table.add(String.fromCharCode(endCode) );
+
+      var byteOut = byteArrayOutputStream();
+      var bitOut = bitOutputStream(byteOut);
+
+      // clear code
+      bitOut.write(clearCode, bitLength);
+
+      var dataIndex = 0;
+
+      var s = String.fromCharCode(_data[dataIndex]);
+      dataIndex += 1;
+
+      while (dataIndex < _data.length) {
+
+        var c = String.fromCharCode(_data[dataIndex]);
+        dataIndex += 1;
+
+        if (table.contains(s + c) ) {
+
+          s = s + c;
+
+        } else {
+
+          bitOut.write(table.indexOf(s), bitLength);
+
+          if (table.size() < 0xfff) {
+
+            if (table.size() == (1 << bitLength) ) {
+              bitLength += 1;
+            }
+
+            table.add(s + c);
+          }
+
+          s = c;
+        }
+      }
+
+      bitOut.write(table.indexOf(s), bitLength);
+
+      // end code
+      bitOut.write(endCode, bitLength);
+
+      bitOut.flush();
+
+      return byteOut.toByteArray();
+    };
+
+    var lzwTable = function() {
+
+      var _map = {};
+      var _size = 0;
+
+      var _this = {};
+
+      _this.add = function(key) {
+        if (_this.contains(key) ) {
+          throw 'dup key:' + key;
+        }
+        _map[key] = _size;
+        _size += 1;
+      };
+
+      _this.size = function() {
+        return _size;
+      };
+
+      _this.indexOf = function(key) {
+        return _map[key];
+      };
+
+      _this.contains = function(key) {
+        return typeof _map[key] != 'undefined';
+      };
+
+      return _this;
+    };
+
+    return _this;
+  };
+
+  var createDataURL = function(width, height, getPixel) {
+    var gif = gifImage(width, height);
+    for (var y = 0; y < height; y += 1) {
+      for (var x = 0; x < width; x += 1) {
+        gif.setPixel(x, y, getPixel(x, y) );
+      }
+    }
+
+    var b = byteArrayOutputStream();
+    gif.write(b);
+
+    var base64 = base64EncodeOutputStream();
+    var bytes = b.toByteArray();
+    for (var i = 0; i < bytes.length; i += 1) {
+      base64.writeByte(bytes[i]);
+    }
+    base64.flush();
+
+    return 'data:image/gif;base64,' + base64;
+  };
+
+  //---------------------------------------------------------------------
+  // returns qrcode function.
+
+  return qrcode;
+}();
+
+// multibyte support
+!function() {
+
+  qrcode.stringToBytesFuncs['UTF-8'] = function(s) {
+    // http://stackoverflow.com/questions/18729405/how-to-convert-utf8-string-to-byte-array
+    function toUTF8Array(str) {
+      var utf8 = [];
+      for (var i=0; i < str.length; i++) {
+        var charcode = str.charCodeAt(i);
+        if (charcode < 0x80) utf8.push(charcode);
+        else if (charcode < 0x800) {
+          utf8.push(0xc0 | (charcode >> 6),
+              0x80 | (charcode & 0x3f));
+        }
+        else if (charcode < 0xd800 || charcode >= 0xe000) {
+          utf8.push(0xe0 | (charcode >> 12),
+              0x80 | ((charcode>>6) & 0x3f),
+              0x80 | (charcode & 0x3f));
+        }
+        // surrogate pair
+        else {
+          i++;
+          // UTF-16 encodes 0x10000-0x10FFFF by
+          // subtracting 0x10000 and splitting the
+          // 20 bits of 0x0-0xFFFFF into two halves
+          charcode = 0x10000 + (((charcode & 0x3ff)<<10)
+            | (str.charCodeAt(i) & 0x3ff));
+          utf8.push(0xf0 | (charcode >>18),
+              0x80 | ((charcode>>12) & 0x3f),
+              0x80 | ((charcode>>6) & 0x3f),
+              0x80 | (charcode & 0x3f));
+        }
+      }
+      return utf8;
+    }
+    return toUTF8Array(s);
+  };
+
+}();
+
+(function (factory) {
+  if (typeof define === 'function' && define.amd) {
+      define([], factory);
+  } else if (typeof exports === 'object') {
+      module.exports = factory();
+  }
+}(function () {
+    return qrcode;
+}));
+
+</script>
+<script>
 // ══ FIREBASE CONFIG ══
 const FB_CONFIG = {
   apiKey: "AIzaSyBzaKMn7479kbHXAEOASzGZIc7FXZ0_g9U",
@@ -1327,7 +3669,8 @@ function syncFirebase() {
       nyumba: t.nyumba||'', mkoa: t.mkoa||'',
       kuingia: t.kuingia||'', kuisha: t.kuisha||'',
       pango: parseInt(t.pango)||0, miezi: parseInt(t.miezi)||3,
-      sts: t.sts||'a', kit: t.kit||''
+      sts: t.sts||'a', kit: t.kit||'',
+      deni: (typeof acct==='function'?acct(t).deni:0), salio: (typeof acct==='function'?acct(t).salio:0)
     }, {merge:true}).catch(function(){});
   });
 
@@ -1342,7 +3685,7 @@ function syncFirebase() {
         jumla: parseInt(p.jumla)||0, kilipo: parseInt(p.kilipo)||0,
         tofauti: parseInt(p.tofauti)||0, njia: p.njia||'',
         risiti: p.risiti||'', kipindi: p.kipindi||'',
-        hali: p.hali||'IMELIPWA', mpya: p.mpya||''
+        hali: p.hali||'IMELIPWA', mpya: p.mpya||'', kuanza: p.kuanza||'', salio: (p.salio===undefined?0:p.salio), vt: p.vt||''
       }, {merge:true}).catch(function(){});
   });
 }
@@ -1356,7 +3699,7 @@ function syncFirebase() {
 // ════════════════════════════════════════
 const TODAY = new Date();
 function fmt(d){ if(!d) return '—'; const x=new Date(d); if(isNaN(x)) return d; return x.toLocaleDateString('sw-TZ',{day:'2-digit',month:'2-digit',year:'numeric'}); }
-function daysLeft(d){ const x=new Date(d); return Math.floor((x-TODAY)/86400000); }
+function daysLeft(d){ const x=new Date(d); return Math.floor((x-new Date())/86400000); }
 function tzs(n){ if(n===undefined||n===null) return '—'; return parseInt(n).toLocaleString('en-TZ'); }
 function badgeHali(h){
   if(!h||h==='—') return '<span class="small">—</span>';
@@ -1538,6 +3881,7 @@ function loadData() {
     if (d.MALIPO) MALIPO.length = 0, MALIPO.push(...d.MALIPO);
     if (d.SC_DATA) SC_DATA.length = 0, SC_DATA.push(...d.SC_DATA);
     if (d.MATENGENEZO) MATENGENEZO.length = 0, MATENGENEZO.push(...d.MATENGENEZO);
+    reconcileTenantDates();
     const el = document.getElementById('save-status');
     const at = d._savedAt ? new Date(d._savedAt).toLocaleString('sw-TZ') : '';
     if (el) el.textContent = '✓ Imepakiwa ' + at;
@@ -1558,6 +3902,7 @@ function importJSON(evt) {
       if (d.MALIPO) MALIPO.length = 0, MALIPO.push(...d.MALIPO);
       if (d.SC_DATA) SC_DATA.length = 0, SC_DATA.push(...d.SC_DATA);
       if (d.MATENGENEZO) MATENGENEZO.length = 0, MATENGENEZO.push(...d.MATENGENEZO);
+    reconcileTenantDates();
       renderAll(); showToast('✓ Data imeingizwa', 'ok');
     } catch(ex) { showToast('❌ JSON hitilafu: ' + ex.message, 'err'); }
   };
@@ -1589,11 +3934,9 @@ function show(id) {
   document.querySelectorAll('.content').forEach(el => el.classList.remove('active'));
   document.querySelectorAll('.nav-tab').forEach(el => el.classList.remove('active'));
   document.getElementById(id).classList.add('active');
-  const tabs = document.querySelectorAll('.nav-tab');
-  const map = {dashibodi:0,wapangaji:1,nyumba:2,historia:3,malipo:4,huduma:5,invoice:6,risiti:7,ripoti:8,matengenezo:9,roi:10,ujumbe:11,maoni:12,maombi:13};
-  if (map[id]!==undefined && tabs[map[id]]) tabs[map[id]].classList.add('active');
+  document.querySelectorAll('.nav-tab').forEach(tb=>{ if(tb.getAttribute('onclick')==="show('"+id+"')") tb.classList.add('active'); });
   // render the page
-  const renders = {dashibodi:renderDash,wapangaji:renderWP,nyumba:renderNY,historia:renderHI,malipo:renderMAL,huduma:renderSC,roi:renderROI,ripoti:renderRP,matengenezo:renderMT,mkataba:initMkataba,ujumbe:renderUjumbeTab,maoni:renderMaoniTab,maombi:renderMaombiTab};
+  const renders = {dashibodi:renderDash,wapangaji:renderWP,nyumba:renderNY,historia:renderHI,malipo:renderMAL,huduma:renderSC,roi:renderROI,ripoti:renderRP,matengenezo:renderMT,mkataba:initMkataba,hakiki:renderHakiki,ujumbe:renderUjumbeTab,maoni:renderMaoniTab,maombi:renderMaombiTab};
   if (renders[id]) renders[id]();
 }
 
@@ -1615,6 +3958,247 @@ function populateTenantSelects() {
   });
 }
 
+// ════════════════════════════════════════
+// AKAUNTI MOJA YA UKWELI (v2) — sehemu zote zinatumia hesabu hizi hizi
+// ════════════════════════════════════════
+// Mfumo: kodi inalipwa mapema kwa miezi (prepaid). Tarehe ya "kuisha" ya mpangaji (t.kuisha) ni mpaka wa kodi iliyolipwa.
+// Kila malipo yanafunika idadi ya miezi kamili kulingana na KIASI kilicholipwa; kiasi kinachobaki ni "salio"
+// linalobebwa kwenda malipo yanayofuata (au deni, likiwa hasi). Deni linahesabiwa kwa miezi iliyopita tangu kodi kuisha.
+function addMonthsISO(iso, n){
+  const d = new Date(String(iso).slice(0,10) + 'T00:00:00Z'); if(isNaN(d)) return iso;
+  const day = d.getUTCDate(); d.setUTCDate(1); d.setUTCMonth(d.getUTCMonth() + n);
+  const last = new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth()+1, 0)).getUTCDate();
+  d.setUTCDate(Math.min(day, last)); return d.toISOString().slice(0,10);
+}
+// Salio (+) au deni (−) linalobebwa kutoka malipo ya awali
+function netCredit(t){
+  const ps = MALIPO.filter(p=>p.id===t.id);
+  let idx = -1; ps.forEach((p,i)=>{ if(p.salio!==undefined) idx = i; });
+  if(idx >= 0) return ps[idx].salio;               // malipo ya mfumo mpya yanabeba salio lenyewe
+  // malipo ya zamani: yaliyoitwa IMELIPWA yalipandisha tarehe kikamilifu (tofauti = ziada/pungufu);
+  // mengine hayakupandisha tarehe, kwa hiyo kiasi kilicholipwa ni salio
+  return ps.reduce((s,p)=> s + (p.hali==='IMELIPWA' ? (p.kilipo - p.jumla) : p.kilipo), 0);
+}
+function acct(t){
+  const ps = MALIPO.filter(p=>p.id===t.id);
+  const last = ps.length ? ps[ps.length-1] : null;
+  const paidThrough = t.kuisha;                      // chanzo kimoja: saveMalipo inaisasisha kila wakati
+  const dl = daysLeft(paidThrough);
+  const expired = dl < 0;
+  const monthsOverdue = expired ? Math.ceil(-dl/30.4375) : 0;
+  const rent = parseInt(t.pango)||0;
+  const net = netCredit(t);
+  const overdueAmt = monthsOverdue * rent;
+  const deni = Math.max(0, overdueAmt - net);
+  const salio = Math.max(0, net - overdueAmt);
+  const paid = ps.reduce((s,p)=>s+(p.kilipo||0),0), charged = ps.reduce((s,p)=>s+(p.jumla||0),0);
+  return {t, ps, last, paidThrough, dl, expired, monthsOverdue, rent, net, overdueAmt, deni, salio, paid, charged,
+          status: deni>0 ? (expired?'INADAIWA':'DENI') : 'IMELIPWA'};
+}
+function debtCell(a){
+  return a.deni>0 ? `<span style="color:#C0392B;font-weight:700">TZS ${tzs(a.deni)}</span>`
+       : a.salio>0 ? `<span style="color:#1A6B3A">+TZS ${tzs(a.salio)}</span>`
+       : '<span class="small">—</span>';
+}
+// Hesabu ya malipo mapya: inafunika miezi mingapi, tarehe mpya, na salio
+function payCover(a, startISO, pango, maji, usafi, ulinzi, miezi, kilipo){
+  const monthlyP = pango + maji + usafi + ulinzi, jumla = monthlyP * miezi;
+  const avail = kilipo + a.net;
+  let covered = monthlyP > 0 ? Math.floor(avail / monthlyP) : miezi;
+  covered = Math.max(0, Math.min(miezi, covered));
+  const mpya = addMonthsISO(startISO, covered);
+  const salio = avail - covered * monthlyP;
+  const hali = covered >= miezi ? 'IMELIPWA' : (kilipo > 0 ? 'SEHEMU' : 'HAIJALIPIWA');
+  return {monthlyP, jumla, avail, covered, mpya, salio, hali};
+}
+function payPreview(){
+  const box = document.getElementById('pay-calc-cover'); if(!box) return;
+  const id = (document.getElementById('m-mal-tenant')||{}).value;
+  const t = WAPANGAJI.find(x=>x.id===id);
+  if(!t){ box.style.display='none'; return; }
+  const a = acct(t);
+  const ku = document.getElementById('m-pay-kuanza');
+  if(ku && !ku.value) ku.value = a.paidThrough;
+  let start = (ku && ku.value) || a.paidThrough; if(start < a.paidThrough) start = a.paidThrough;
+  const g = k => parseInt((document.getElementById(k)||{}).value)||0;
+  const r = payCover(a, start, g('m-pay-pango'), g('m-pay-maji'), g('m-pay-usafi'), g('m-pay-ulinzi'), g('m-pay-miezi')||1, g('m-pay-kilipo'));
+  box.style.display = 'block';
+  box.innerHTML = `📅 Kipindi: <strong>${fmt(start)}</strong> → <strong>${fmt(r.mpya)}</strong> (miezi ${r.covered}/${g('m-pay-miezi')||1} imefunikwa) · `
+    + (r.hali==='IMELIPWA' ? '✅ Imelipwa kikamilifu' : r.hali==='SEHEMU' ? '🟠 Malipo ya sehemu' : '⚪ Hakuna kilicholipwa')
+    + (r.salio>0 ? ` · Salio la mbele: <strong>TZS ${tzs(r.salio)}</strong>` : '')
+    + (r.salio<0 ? ` · Deni litakalobaki: <strong style="color:#C0392B">TZS ${tzs(-r.salio)}</strong>` : '')
+    + (a.expired ? `<br><span class="small">Kodi ya awali iliisha ${fmt(a.paidThrough)} (miezi ${a.monthsOverdue} imechelewa). Deni la sasa: TZS ${tzs(a.deni)}</span>` : '');
+}
+
+// ════════════════════════════════════════
+// BARCODE (QR) YA RISITI NA UHAKIKI
+// ════════════════════════════════════════
+const VERIFY_BASE = 'https://tenant.kiseja.com/';
+function genToken(){
+  const a = new Uint8Array(8);
+  try{ (window.crypto||window.msCrypto).getRandomValues(a); }catch(e){ for(let i=0;i<8;i++) a[i]=Math.floor(Math.random()*256); }
+  return Array.from(a).map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+function verifyUrl(vt){ return VERIFY_BASE + '?h=' + vt; }
+function qrSvg(text){
+  const q = qrcode(0, 'M'); q.addData(text); q.make();
+  const n = q.getModuleCount(), m = 2, size = n + 2*m;
+  let d = '';
+  for(let r=0;r<n;r++) for(let c=0;c<n;c++) if(q.isDark(r,c)) d += `M${c+m},${r+m}h1v1h-1z`;
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${size} ${size}" shape-rendering="crispEdges" role="img" aria-label="QR ya uhakiki wa risiti"><rect width="${size}" height="${size}" fill="#fff"/><path d="${d}" fill="#000"/></svg>`;
+}
+function ensureVT(p){ if(!p.vt){ p.vt = genToken(); markDirty(); } return p.vt; }
+// Rekodi ndogo ya umma kwa uhakiki (BILA jina wala simu): inasomwa na ukurasa wa uhakiki kwa mtu yeyote mwenye QR
+function pushVerifyRecord(p){
+  try{
+    const u = firebase.auth().currentUser; if(!u || u.isAnonymous) return;
+    ensureVT(p);
+    _fbdb.collection('risiti_hakiki').doc(p.vt).set({
+      n: p.risiti||'', t: p.tarehe||'', k: parseInt(p.kilipo)||0, kp: p.kipindi||'', h: p.mpya||'', s: p.hali||'', ny: p.nyumba||''
+    }).then(function(){ p.vsync = true; markDirty(); }).catch(function(){ window._verifyWriteFailed = true; });
+  }catch(e){}
+}
+function backfillVerify(){
+  let n = 0; MALIPO.forEach(p=>{ if(!p.vt){ p.vt = genToken(); n++; } }); if(n) markDirty();
+  let c = 0; MALIPO.forEach(p=>{ if(!p.vsync && c < 60){ c++; pushVerifyRecord(p); } });
+}
+
+// Wingu linaweza kubatilisha tarehe ya mpangaji kwa thamani ya zamani; malipo ya mwisho (ya mfumo mpya) ndiyo ukweli
+function reconcileTenantDates(){
+  let ch = 0;
+  WAPANGAJI.forEach(t=>{
+    const ps = MALIPO.filter(p=>p.id===t.id && p.kuanza && p.mpya);
+    const last = ps.length ? ps[ps.length-1] : null;
+    if(last && last.mpya > t.kuisha){ t.kuisha = last.mpya; ch++; }
+  });
+  if(ch) markDirty();
+  return ch;
+}
+
+// ════════════════════════════════════════
+// HAKIKI RISITI (kwa namba, QR au kamera)
+// ════════════════════════════════════════
+function hkParse(raw){
+  raw = (raw||'').trim(); if(!raw) return null;
+  if(/^https?:\/\//i.test(raw)){
+    try{ const u = new URL(raw); const h = u.searchParams.get('h') || u.searchParams.get('hakiki'); if(h) return {tok:h.trim().toLowerCase()}; }catch(e){}
+    return null;
+  }
+  if(/^[0-9a-f]{16}$/i.test(raw)) return {tok: raw.toLowerCase()};
+  return {no: raw.toUpperCase()};
+}
+function hkCard(ok, html){
+  return `<div style="background:#fff;border:2px solid ${ok?'#1A6B3A':'#C0392B'};border-radius:12px;padding:16px 18px">
+    <div style="font-size:1.05rem;font-weight:800;color:${ok?'#1A6B3A':'#C0392B'};margin-bottom:8px">${ok?'✅ RISITI HALALI':'❌ HAIJATHIBITIKA'}</div>${html}</div>`;
+}
+function hakikiLookup(raw){
+  const out = document.getElementById('hk-result'); if(!out) return null;
+  const q = hkParse(raw);
+  if(!q){ out.innerHTML = hkCard(false, '<div class="small">Namba au msimbo si sahihi. Andika namba kama <strong>RCP-001-001</strong> au scan QR ya risiti.</div>'); return null; }
+  const list = q.tok ? MALIPO.filter(p=>p.vt===q.tok) : MALIPO.filter(p=>(p.risiti||'').toUpperCase()===q.no);
+  if(!list.length){
+    out.innerHTML = hkCard(false, `<div class="small">Hakuna risiti inayolingana na <strong>${(q.no||q.tok).replace(/</g,'&lt;')}</strong> kwenye rekodi. Hii inaweza kuwa risiti isiyo ya kweli au namba imeandikwa vibaya.</div>`);
+    return null;
+  }
+  const rows = list.map(p=>{
+    const t = WAPANGAJI.find(x=>x.id===p.id) || {};
+    return `<div class="doc-row"><span>Namba ya Risiti:</span><strong>${p.risiti}</strong></div>
+      <div class="doc-row"><span>Mpangaji:</span><strong>${p.jina}</strong></div>
+      <div class="doc-row"><span>Nyumba:</span>${p.nyumba} (${p.mkoa||''})</div>
+      <div class="doc-row"><span>Tarehe ya Malipo:</span>${fmt(p.tarehe)}</div>
+      <div class="doc-row"><span>Kipindi:</span>${p.kuanza?fmt(p.kuanza)+' → '+fmt(p.mpya):(p.kipindi||'—')}</div>
+      <div class="doc-row"><span>Kiasi Kilicholipwa:</span><strong style="color:#1A6B3A">TZS ${tzs(p.kilipo)}</strong></div>
+      <div class="doc-row"><span>Njia ya Malipo:</span>${p.njia||'—'}</div>
+      <div class="doc-row"><span>Hali:</span>${badgeHali(p.hali)}</div>
+      <div class="doc-row"><span>Kodi Imelipwa Hadi:</span><strong>${fmt(p.mpya)}</strong></div>
+      <div style="margin-top:8px" class="no-print"><button class="btn-sm btn-pri" onclick="document.getElementById('risiti-namba').value='${p.risiti}';show('risiti');buildRisiti()">🏷️ Fungua Risiti</button></div>`;
+  });
+  const warn = list.length > 1 ? `<div style="background:#FFF4E5;border-radius:6px;padding:8px 10px;margin-bottom:8px;font-size:.78rem;color:#8A5A00">⚠️ Namba hii ipo mara ${list.length} kwenye rekodi (inatakiwa iwe moja). Linganisha kwa makini.</div>` : '';
+  out.innerHTML = hkCard(true, warn + rows.join('<hr style="border:none;border-top:1px dashed #D7DCE8;margin:10px 0">'));
+  return list;
+}
+function hakikiFromInput(){ hakikiLookup(document.getElementById('hk-no').value); }
+function renderHakiki(){
+  const out = document.getElementById('hk-result'); if(out && !out.innerHTML) out.innerHTML = '';
+  const sy = document.getElementById('hk-sync');
+  if(sy){ const n = MALIPO.length, c = MALIPO.filter(p=>p.vsync).length;
+    sy.innerHTML = window._verifyWriteFailed
+      ? '⚠️ Uhakiki wa <strong>umma</strong> (mtu asiye msimamizi akipiga QR) haujawezeshwa: Firebase imekataa kuandika rekodi ya uhakiki. Uhakiki ndani ya programu hii unafanya kazi kawaida.'
+      : `Uhakiki wa umma kupitia QR: risiti <strong>${c}</strong> kati ya <strong>${n}</strong> zimesawazishwa mtandaoni.`; }
+  if(window._pendingVerify){ const v = window._pendingVerify; window._pendingVerify = null; document.getElementById('hk-no').value = v; hakikiLookup(v); }
+}
+let _scanStream = null, _scanRAF = 0, _jsqrP = null;
+function loadJsQR(){
+  if(typeof jsQR !== 'undefined') return Promise.resolve();
+  if(_jsqrP) return _jsqrP;
+  const urls = ['https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js','https://cdnjs.cloudflare.com/ajax/libs/jsQR/1.4.0/jsQR.min.js'];
+  _jsqrP = urls.reduce((p,u)=>p.catch(()=>new Promise((res,rej)=>{ const s=document.createElement('script'); s.src=u; s.onload=res; s.onerror=rej; document.head.appendChild(s); })), Promise.reject());
+  _jsqrP.catch(()=>{ _jsqrP = null; });
+  return _jsqrP;
+}
+async function startScan(){
+  const box = document.getElementById('hk-cam'), v = document.getElementById('hk-video'), msg = document.getElementById('hk-scan-msg');
+  if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia){ showToast('Kamera haipatikani kwenye kivinjari hiki — andika namba ya risiti.','w'); return; }
+  try{ _scanStream = await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:'environment'}}, audio:false}); }
+  catch(e){ showToast('Ruhusa ya kamera imekataliwa au kamera haipatikani.','w'); return; }
+  v.srcObject = _scanStream; try{ await v.play(); }catch(e){}
+  box.style.display = 'block'; msg.textContent = 'Elekeza kamera kwenye barcode (QR) ya risiti...';
+  let det = null; if('BarcodeDetector' in window){ try{ det = new BarcodeDetector({formats:['qr_code']}); }catch(e){} }
+  if(!det){ try{ await loadJsQR(); }catch(e){ msg.textContent = 'Imeshindwa kupakia kisomaji cha QR (angalia mtandao). Andika namba ya risiti badala yake.'; return; } }
+  const cv = document.getElementById('hk-canvas'), cx = cv.getContext('2d', {willReadFrequently:true});
+  const tick = async ()=>{
+    if(!_scanStream) return;
+    if(v.readyState >= 2 && v.videoWidth){
+      let val = null;
+      try{
+        if(det){ const r = await det.detect(v); if(r && r[0]) val = r[0].rawValue; }
+        else{ cv.width = v.videoWidth; cv.height = v.videoHeight; cx.drawImage(v,0,0); const img = cx.getImageData(0,0,cv.width,cv.height); const c = jsQR(img.data, img.width, img.height); if(c) val = c.data; }
+      }catch(e){}
+      if(val){ stopScan(); document.getElementById('hk-no').value = /^https?:/i.test(val) ? '' : val; hakikiLookup(val); return; }
+    }
+    _scanRAF = requestAnimationFrame(tick);
+  };
+  tick();
+}
+function stopScan(){
+  if(_scanStream){ _scanStream.getTracks().forEach(t=>t.stop()); _scanStream = null; }
+  cancelAnimationFrame(_scanRAF);
+  const box = document.getElementById('hk-cam'); if(box) box.style.display = 'none';
+}
+// ── Uhakiki wa umma: mtu asiyeingia akifungua kiungo cha QR (tenant.kiseja.com/?h=...) ──
+const _vTok = (function(){ try{ const q = new URLSearchParams(location.search); return (q.get('h')||q.get('hakiki')||'').trim().toLowerCase(); }catch(e){ return ''; } })();
+function publicOverlay(html){
+  let ov = document.getElementById('pub-verify');
+  if(!ov){ ov = document.createElement('div'); ov.id = 'pub-verify';
+    ov.style.cssText = 'position:fixed;inset:0;z-index:99999;background:linear-gradient(160deg,#0F1923,#0A6E6E 140%);display:flex;align-items:center;justify-content:center;padding:16px;font-family:inherit;overflow:auto';
+    document.body.appendChild(ov); }
+  ov.innerHTML = `<div style="background:#F7F5F0;border-radius:14px;max-width:420px;width:100%;padding:20px;box-shadow:0 8px 40px rgba(0,0,0,.35)">
+    <div style="font-weight:800;color:#0A6E6E;margin-bottom:10px">KISEJA TENANTS — Uhakiki wa Risiti</div>${html}
+    <div style="margin-top:14px"><button class="btn btn-sec" onclick="publicOverlayClose()">Ingia kama msimamizi</button></div></div>`;
+}
+function publicOverlayClose(){ const ov = document.getElementById('pub-verify'); if(ov) ov.remove(); }
+async function publicVerify(tok){
+  publicOverlay('<div class="small">⏳ Inahakiki risiti...</div>');
+  try{
+    if(!firebase.auth().currentUser){ await firebase.auth().signInAnonymously(); }
+    const d = await _fbdb.collection('risiti_hakiki').doc(tok).get();
+    if(!d.exists){ publicOverlay(hkCard(false, '<div class="small">Risiti hii haipatikani. Inaweza kuwa si ya kweli, au bado haijasawazishwa mtandaoni.</div>')); return; }
+    const r = d.data();
+    publicOverlay(hkCard(true, `
+      <div class="doc-row"><span>Namba ya Risiti:</span><strong>${String(r.n||'').replace(/</g,'&lt;')}</strong></div>
+      <div class="doc-row"><span>Tarehe:</span>${fmt(r.t)}</div>
+      <div class="doc-row"><span>Nyumba:</span>${String(r.ny||'').replace(/</g,'&lt;')}</div>
+      <div class="doc-row"><span>Kipindi:</span>${String(r.kp||'—').replace(/</g,'&lt;')}</div>
+      <div class="doc-row"><span>Kiasi Kilicholipwa:</span><strong style="color:#1A6B3A">TZS ${tzs(r.k)}</strong></div>
+      <div class="doc-row"><span>Kodi Hadi:</span><strong>${fmt(r.h)}</strong></div>
+      <div class="doc-row"><span>Hali:</span>${badgeHali(r.s)}</div>
+      <div class="small" style="margin-top:8px;color:#6B7280">Taarifa binafsi (jina, simu) hazionyeshwi hapa.</div>`));
+  }catch(e){
+    publicOverlay(hkCard(false, '<div class="small">Haikuweza kuhakikiwa mtandaoni sasa hivi. Jaribu tena au wasiliana na msimamizi.</div>'));
+  }
+}
+if(_vTok){ window._pendingVerify = _vTok; document.addEventListener('DOMContentLoaded', ()=>publicVerify(_vTok)); if(document.readyState!=='loading') publicVerify(_vTok); }
+
 function renderAll() {
   populateTenantSelects();
   renderDash(); renderWP(); renderNY(); renderHI(); renderMAL();
@@ -1627,8 +4211,10 @@ function nextTenantId() {
 }
 function newRCP(id) {
   const n = id.replace('TEN-','');
-  const cnt = MALIPO.filter(p=>p.id===id).length + 1;
-  return 'RCP-' + n + '-' + String(cnt).padStart(3,'0');
+  let mx = 0; MALIPO.forEach(p=>{ if(p.id===id){ const m=(p.risiti||'').match(/-(\d+)$/); if(m) mx=Math.max(mx,parseInt(m[1],10)); } });
+  let c = Math.max(mx, MALIPO.filter(p=>p.id===id).length) + 1, r;
+  do { r = 'RCP-' + n + '-' + String(c).padStart(3,'0'); c++; } while(MALIPO.some(p=>p.risiti===r));
+  return r;
 }
 
 // ════════════════════════════════════════
@@ -1646,6 +4232,9 @@ function renderDash() {
   document.getElementById('kpi-near').textContent = near.length;
   document.getElementById('kpi-rev').textContent = 'TZS ' + tzs(rev);
   document.getElementById('kpi-occ').textContent = NYUMBA.filter(n=>act.some(t=>t.nyumba===n.namba)).length + '/' + NYUMBA.length;
+  const _ac = act.map(acct);
+  document.getElementById('kpi-deni').textContent = 'TZS ' + tzs(_ac.reduce((s,a)=>s+a.deni,0));
+  document.getElementById('kpi-deni-n').textContent = _ac.filter(a=>a.deni>0).length;
 
   const q = (document.getElementById('dash-q')?.value||'').toLowerCase();
   const mk = document.getElementById('dash-mk')?.value||'';
@@ -1660,19 +4249,19 @@ function renderDash() {
   body.innerHTML = dt.map((t,i)=>{
     const dl = daysLeft(t.kuisha);
     const h = dl>=0?'HAI':'IMEISHA';
-    const dlTxt = dl>=0 ? `<span style="color:${dl<=30?'#C0392B':'#1A6B3A'}">Siku ${dl}</span>` : `<span style="color:#C0392B">Imeisha</span>`;
+    const dlTxt = dl>=0 ? `<span style="color:${dl<=30?'#C0392B':'#1A6B3A'}">Siku ${dl}</span>` : `<span style="color:#C0392B">Imeisha (miezi ${Math.ceil(-dl/30.4375)})</span>`;
     return `<tr>
       <td>${i+1}</td><td><strong>${t.jina}</strong></td><td class="mono small">${t.id}</td>
       <td class="mono">${t.nyumba}</td><td>${t.mkoa}</td><td class="mono">${fmt(t.kuingia)}</td>
       <td class="right mono">TZS ${tzs(t.pango)}</td><td class="mono">${fmt(t.kuisha)}</td>
-      <td>${badgeHali(h)}</td><td>${dlTxt}</td><td class="mono small">${t.simu}</td>
+      <td>${badgeHali(h)}</td><td>${dlTxt}</td><td class="right mono">${debtCell(acct(t))}</td><td class="mono small">${t.simu}</td>
       <td class="no-print" style="white-space:nowrap">
         <button class="btn-sm btn-sec" onclick="openEditWP('${t.id}')">✏️</button>
         <button class="btn-sm btn-sec" onclick="openHamaModal('${t.id}')">🚪 Hama</button>
         <button class="btn-sm btn-pri" onclick="openMalipoModal('${t.id}')">💰</button>
       </td>
     </tr>`;
-  }).join('') || '<tr><td colspan="12" class="center">Hakuna wapangaji</td></tr>';
+  }).join('') || '<tr><td colspan="13" class="center">Hakuna wapangaji</td></tr>';
 }
 
 // ════════════════════════════════════════
@@ -1694,14 +4283,14 @@ function renderWP() {
       <td class="mono small">${t.simu}</td><td class="mono">${t.nyumba}</td><td>${t.mkoa}</td>
       <td class="mono">${fmt(t.kuingia)}</td><td class="right mono">TZS ${tzs(t.pango)}</td>
       <td class="center">${t.miezi}</td><td class="mono">${fmt(t.kuisha)}</td>
-      <td>${badgeHali(h)}</td>
+      <td>${badgeHali(h)}</td><td class="right mono">${t.sts==='a'?debtCell(acct(t)):'—'}</td>
       <td class="no-print" style="white-space:nowrap">
         <button class="btn-sm btn-sec" onclick="openEditWP('${t.id}')">✏️ Hariri</button>
         ${t.sts==='a'?`<button class="btn-sm btn-danger" onclick="openHamaModal('${t.id}')">🚪 Hama</button>
         <button class="btn-sm btn-pri" onclick="openMalipoModal('${t.id}')">💰 Malipo</button>`:''}
       </td>
     </tr>`;
-  }).join('') || '<tr><td colspan="12" class="center">Hakuna wapangaji</td></tr>';
+  }).join('') || '<tr><td colspan="13" class="center">Hakuna wapangaji</td></tr>';
 }
 
 // ════════════════════════════════════════
@@ -1718,7 +4307,7 @@ function renderNY() {
       <td class="right mono">TZS ${tzs(n.kodi)}</td>
       <td class="right mono">TZS ${tzs(n.gharama)}</td>
       <td>${badgeHali(h)}</td>
-      <td>${ten?ten.jina:'—'}</td>
+      <td>${ten?ten.jina:'—'}</td><td class="mono">${ten?fmt(ten.kuisha):'—'}</td><td class="right mono">${ten?debtCell(acct(ten)):'—'}</td>
       <td class="no-print">
         <button class="btn-sm btn-sec" onclick="openEditNY(${n.na})">✏️ Hariri</button>
       </td>
@@ -1772,30 +4361,43 @@ function renderMAL() {
     <td class="right mono" style="color:#1A6B3A"><strong>TZS ${tzs(p.kilipo)}</strong></td>
     <td class="right mono" style="color:${p.tofauti>=0?'#1A6B3A':'#C0392B'}">${p.tofauti>=0?'+':''}TZS ${tzs(p.tofauti)}</td>
     <td>${p.njia}</td><td class="mono small">${p.risiti||'—'}</td>
-    <td class="small">${p.kipindi||'—'}</td><td>${badgeHali(p.hali)}</td>
+    <td class="small">${p.kipindi||'—'}</td><td class="mono">${fmt(p.mpya)}</td>
+    <td class="right mono" style="color:${(p.salio||0)<0?'#C0392B':'#1A6B3A'}">${p.salio===undefined?'—':(p.salio>0?'+':'')+'TZS '+tzs(p.salio)}</td><td>${badgeHali(p.hali)}</td>
     <td class="no-print" style="white-space:nowrap">
       <button class="btn-sm btn-danger" onclick="delMalipo(${p.na})">🗑</button>
     </td>
-  </tr>`).join('') || '<tr><td colspan="18" class="center">Hakuna malipo</td></tr>';
+  </tr>`).join('') || '<tr><td colspan="20" class="center">Hakuna malipo</td></tr>';
 
   // Summary
   const totKilipo = dt.reduce((s,p)=>s+p.kilipo,0);
   const totJumla = dt.reduce((s,p)=>s+p.jumla,0);
   const sumEl = document.getElementById('mal-summary');
-  if(sumEl) sumEl.innerHTML = `Rekodi: <strong>${dt.length}</strong> &nbsp;|&nbsp; Jumla Inatakiwa: <strong>TZS ${tzs(totJumla)}</strong> &nbsp;|&nbsp; Jumla Imelipwa: <strong style="color:#1A6B3A">TZS ${tzs(totKilipo)}</strong>`;
+  const _actM = WAPANGAJI.filter(t=>t.sts==='a' && (!tf||t.id===tf));
+  const _deni = _actM.reduce((x,t)=>x+acct(t).deni,0);
+  if(sumEl) sumEl.innerHTML = `Rekodi: <strong>${dt.length}</strong> &nbsp;|&nbsp; Jumla Inatakiwa: <strong>TZS ${tzs(totJumla)}</strong> &nbsp;|&nbsp; Jumla Imelipwa: <strong style="color:#1A6B3A">TZS ${tzs(totKilipo)}</strong> &nbsp;|&nbsp; Madeni ya sasa ya kodi: <strong style="color:${_deni>0?'#C0392B':'#1A6B3A'}">TZS ${tzs(_deni)}</strong>`;
 }
 
 function delMalipo(na) {
   if(!confirm('Futa malipo haya?')) return;
-  const idx = MALIPO.findIndex(p=>p.na===na);
-  if(idx>=0) MALIPO.splice(idx,1);
-  MALIPO.forEach((p,i)=>p.na=i+1);
-  markDirty(); renderMAL(); showToast('Malipo yamefutwa');
+  const idx = MALIPO.findIndex(p=>p.na===na); if(idx<0) return;
+  const p = MALIPO[idx], t = WAPANGAJI.find(x=>x.id===p.id);
+  MALIPO.splice(idx,1);
+  const legacyPartial = (p.salio===undefined && p.hali!=='IMELIPWA');   // malipo ya zamani ya sehemu hayakupandisha tarehe
+  if(t && !legacyPartial){
+    const rest = MALIPO.filter(q=>q.id===t.id), prev = rest.length ? rest[rest.length-1] : null;
+    t.kuisha = (prev && prev.mpya) || p.kuanza || addMonthsISO(p.mpya||t.kuisha, -(p.miezi_lipwa!==undefined ? p.miezi_lipwa : (p.miezi||0)));
+  }
+  for(let i=HISTORIA.length-1;i>=0;i--){ if((HISTORIA[i].maelezo||'').indexOf('Malipo: '+p.risiti+' |')===0) HISTORIA.splice(i,1); }
+  HISTORIA.forEach((h,i)=>h.na=i+1);
+  if(p.vt){ try{ _fbdb.collection('risiti_hakiki').doc(p.vt).delete().catch(function(){}); }catch(e){} }
+  try{   // futa nakala ya wingu (kwa kitambulisho na kwa namba ya risiti) ili wapangaji wasione malipo yaliyofutwa
+    const sub = _fbdb.collection('wapangaji').doc(p.id).collection('malipo');
+    sub.doc(String(p.na)).delete().catch(function(){});
+    if(p.risiti) sub.where('risiti','==',p.risiti).get().then(function(sn){ sn.forEach(function(d){ d.ref.delete().catch(function(){}); }); }).catch(function(){});
+  }catch(e){}
+  markDirty(); syncFirebase(); renderAll(); showToast('Malipo yamefutwa');
 }
 
-// ════════════════════════════════════════
-// HUDUMA (SC)
-// ════════════════════════════════════════
 function renderSC() {
   const tf = document.getElementById('sc-tenant')?.value||'';
   const dt = SC_DATA.filter(s=>!tf||s.id===tf);
@@ -1814,6 +4416,12 @@ function renderSC() {
       <button class="btn-sm btn-danger" onclick="delSC(${s.na})">🗑</button>
     </td>
   </tr>`).join('') || '<tr><td colspan="11" class="center">Hakuna rekodi</td></tr>';
+  let sm = document.getElementById('sc-summary');
+  if(!sm){ sm = document.createElement('div'); sm.id='sc-summary'; sm.style.cssText='background:#E8EBF5;border-left:3px solid #1B2B5E;border-radius:6px;padding:9px 14px;font-size:.78rem;margin-bottom:12px;color:#1B2B5E'; const tw = body.closest('.table-wrap'); tw.parentNode.insertBefore(sm, tw); }
+  const billed = dt.reduce((x,s)=>x+(s.maji||0)+(s.usafi||0)+(s.ulinzi||0),0), other = dt.reduce((x,s)=>x+(s.net||0)+(s.bill||0),0);
+  const paidSC = MALIPO.filter(p=>!tf||p.id===tf).reduce((x,p)=>x+((p.maji||0)+(p.usafi||0)+(p.ulinzi||0))*(p.miezi||1),0);
+  const diff = billed - paidSC;
+  sm.innerHTML = `Maji+Usafi+Ulinzi zilizodaiwa: <strong>TZS ${tzs(billed)}</strong> &nbsp;|&nbsp; Zilizolipwa kupitia malipo ya kodi: <strong style="color:#1A6B3A">TZS ${tzs(paidSC)}</strong> &nbsp;|&nbsp; ${diff>0?'Zinazodaiwa bado':'Ziada'}: <strong style="color:${diff>0?'#C0392B':'#1A6B3A'}">TZS ${tzs(Math.abs(diff))}</strong>${other>0?` &nbsp;|&nbsp; Intaneti/Nyingine: <strong>TZS ${tzs(other)}</strong> <span class="small">(hazimo kwenye malipo ya kodi)</span>`:''}`;
 }
 
 function delSC(na) {
@@ -1848,16 +4456,19 @@ function renderROI() {
 
     // Gharama: base + fence share for Mtwara
     const fence = n.mkoa==='Mtwara' ? FENCE_PER : 0;
-    const gharama = n.gharama + fence;
+    const mt = MATENGENEZO.filter(m=>m.nyumba===n.namba).reduce((x,m)=>x+mtOwnerShare(m),0);
+    const gharama = n.gharama + fence + mt;
 
     // Mapato nadharia: pango × miezi × 92%
     const mapato_th = Math.round(pango * mz * 0.92);
     // Use whichever is higher: actual payments or theoretical
-    const mapato = Math.max(kilipo, mapato_th);
+    const _mode = document.getElementById('roi-mode')?.value || 'max';
+    const mapato = _mode==='halisi' ? kilipo : Math.max(kilipo, mapato_th);
+    const deni = ten ? acct(ten).deni : 0;
 
     const faida = mapato - gharama;
     const roi = gharama > 0 ? Math.round((mapato / gharama) * 100) : 0;
-    return {namba:n.namba, mkoa:n.mkoa, aina:n.aina, gharama, pango, mz, kilipo, mapato, faida, roi};
+    return {namba:n.namba, mkoa:n.mkoa, aina:n.aina, gharama, pango, mz, kilipo, mapato, faida, roi, mt, deni};
   });
 
   // KPIs
@@ -1870,6 +4481,7 @@ function renderROI() {
     <div class="kpi-card" style="border-top-color:#1A6B3A"><div class="kpi-label">Jumla Mapato</div><div class="kpi-value" style="font-size:1.1rem;color:#1A6B3A">TZS ${tzs(tm)}</div></div>
     <div class="kpi-card" style="border-top-color:${tf>=0?'#1A6B3A':'#C0392B'}"><div class="kpi-label">Faida/(Hasara)</div><div class="kpi-value" style="font-size:1.1rem;color:${tf>=0?'#1A6B3A':'#C0392B'}">${tf>=0?'+':''}TZS ${tzs(tf)}</div></div>
     <div class="kpi-card"><div class="kpi-label">ROI Jumla</div><div class="kpi-value">${tg>0?Math.round(tm/tg*100):0}%</div></div>
+    <div class="kpi-card" style="border-top-color:#C0392B"><div class="kpi-label">Madeni ya Wapangaji</div><div class="kpi-value" style="font-size:1.1rem;color:#C0392B">TZS ${tzs(data.reduce((x,d)=>x+d.deni,0))}</div></div>
   `;
   // Per-mkoa ROI
   const mkRoiEl = document.getElementById('roi-mkoa');
@@ -1903,10 +4515,11 @@ function renderROI() {
     return `<tr>
       <td>${i+1}</td><td class="mono"><strong>${d.namba}</strong></td><td>${d.mkoa}</td>
       <td class="small">${d.aina||'—'}</td>
-      <td class="right mono">TZS ${tzs(d.gharama)}</td>
+      <td class="right mono">TZS ${tzs(d.gharama)}${d.mt>0?`<div class="small" style="color:#9CA3AF">pamoja na matengenezo TZS ${tzs(d.mt)}</div>`:''}</td>
       <td class="right mono">TZS ${tzs(d.pango)}</td>
       <td class="right mono" style="color:#1A6B3A"><strong>TZS ${tzs(d.kilipo)}</strong></td>
       <td class="right mono">TZS ${tzs(d.mapato)}</td>
+      <td class="right mono" style="color:#C0392B">${d.deni>0?'TZS '+tzs(d.deni):'—'}</td>
       <td class="right mono" style="color:${d.faida>=0?'#1A6B3A':'#C0392B'}"><strong>${d.faida>=0?'+':''}TZS ${tzs(d.faida)}</strong></td>
       <td>
         <div style="display:flex;align-items:center;gap:6px">
@@ -1948,7 +4561,7 @@ function renderRP() {
   const totRev = hai.reduce((s,t)=>s+t.pango,0);
   const totPaid = MALIPO.reduce((s,p)=>s+p.kilipo,0);
   const totOwed = MALIPO.reduce((s,p)=>s+p.jumla,0);
-  const totDebt = Math.max(0, totOwed - totPaid);
+  const totDebt = act.reduce((x,t)=>x+acct(t).deni,0);
   const kpEl = document.getElementById('rp-kpis');
   if(kpEl) kpEl.innerHTML = `
     <div class="kpi-card"><div class="kpi-label">Wapangaji Hai</div><div class="kpi-value">${hai.length}/${act.length}</div></div>
@@ -1975,13 +4588,7 @@ function renderRP() {
   if(scEl) scEl.innerHTML = mkSummary;
 
   // ── Wapangaji wenye madeni ──
-  const debtors = act.filter(t=>{
-    const paid = tenantPaid(t.id); const owed = tenantOwed(t.id);
-    return paid < owed || daysLeft(t.kuisha) < 0;
-  }).map(t=>{
-    const paid = tenantPaid(t.id); const owed = tenantOwed(t.id);
-    return {t, paid, owed, debt: owed - paid};
-  }).sort((a,b)=>b.debt-a.debt);
+  const debtors = act.map(acct).filter(a=>a.deni>0).map(a=>({a, t:a.t, paid:a.paid, debt:a.deni})).sort((x,y)=>y.debt-x.debt);
 
   const dbEl = document.getElementById('rp-debt-count');
   if(dbEl) dbEl.textContent = debtors.length + ' wapangaji';
@@ -1991,18 +4598,16 @@ function renderRP() {
     return `<tr>
       <td>${i+1}</td><td><strong>${x.t.jina}</strong></td><td class="mono">${x.t.nyumba}</td><td>${x.t.mkoa}</td>
       <td class="right mono">TZS ${tzs(x.t.pango)}</td>
-      <td class="right mono">TZS ${tzs(x.owed)}</td>
+      <td class="mono">${fmt(x.t.kuisha)}</td>
+      <td class="center">${x.a.monthsOverdue||'—'}</td>
       <td class="right mono" style="color:#1A6B3A">TZS ${tzs(x.paid)}</td>
       <td class="right mono" style="color:#C0392B;font-weight:700">TZS ${tzs(x.debt)}</td>
       <td>${badgeHali(dl>=0?'HAI':'IMEISHA')}</td>
     </tr>`;
-  }).join('') : '<tr><td colspan="9" class="center" style="color:#1A6B3A;padding:16px">✅ Hakuna madeni</td></tr>';
+  }).join('') : '<tr><td colspan="10" class="center" style="color:#1A6B3A;padding:16px">✅ Hakuna madeni</td></tr>';
 
   // ── Wapangaji wazuri (wamelipa kikamilifu) ──
-  const good = act.filter(t=>{
-    const paid = tenantPaid(t.id); const owed = tenantOwed(t.id);
-    return paid >= owed && owed > 0 && daysLeft(t.kuisha) >= 0;
-  });
+  const good = act.filter(t=>{ const a = acct(t); return a.deni === 0 && a.ps.length > 0 && !a.expired; });
   const gdEl = document.getElementById('rp-good-count');
   if(gdEl) gdEl.textContent = good.length + ' wapangaji';
   const gdBody = document.getElementById('rp-good-body');
@@ -2072,7 +4677,13 @@ function renderMT() {
       <button class="btn-sm btn-danger" onclick="delMT(${m.na})">🗑</button>
     </td>
   </tr>`).join('') || '<tr><td colspan="9" class="center">Hakuna rekodi za matengenezo</td></tr>';
+  let sm = document.getElementById('mt-summary');
+  if(!sm){ sm = document.createElement('div'); sm.id='mt-summary'; sm.style.cssText='background:#E8EBF5;border-left:3px solid #1B2B5E;border-radius:6px;padding:9px 14px;font-size:.78rem;margin-bottom:12px;color:#1B2B5E'; const tw = body.closest('.table-wrap'); tw.parentNode.insertBefore(sm, tw); }
+  const sum = f => MATENGENEZO.filter(f).reduce((x,m)=>x+(m.gharama||0),0);
+  const owner = MATENGENEZO.reduce((x,m)=>x+mtOwnerShare(m),0);
+  sm.innerHTML = `Rekodi: <strong>${MATENGENEZO.length}</strong> &nbsp;|&nbsp; Jumla ya Gharama: <strong>TZS ${tzs(sum(()=>true))}</strong> &nbsp;|&nbsp; Mpangishaji: <strong>TZS ${tzs(sum(m=>m.mlipaji==='MPANGISHAJI'))}</strong> &nbsp;|&nbsp; Mpangaji: <strong>TZS ${tzs(sum(m=>m.mlipaji==='MPANGAJI'))}</strong> &nbsp;|&nbsp; Pamoja: <strong>TZS ${tzs(sum(m=>m.mlipaji==='PAMOJA'))}</strong><br><span class="small">Sehemu ya mpangishaji (TZS ${tzs(owner)}) inaingizwa kwenye gharama za ROI.</span>`;
 }
+function mtOwnerShare(m){ return m.mlipaji==='MPANGISHAJI' ? (m.gharama||0) : m.mlipaji==='PAMOJA' ? Math.round((m.gharama||0)/2) : 0; }
 
 function delMT(na) {
   if(!confirm('Futa rekodi?')) return;
@@ -2085,6 +4696,7 @@ function delMT(na) {
 // ════════════════════════════════════════
 // INVOICE
 // ════════════════════════════════════════
+let _invLast = '';
 function buildInvoice() {
   const tid = document.getElementById('inv-tenant').value;
   const ph = document.getElementById('inv-placeholder');
@@ -2092,32 +4704,23 @@ function buildInvoice() {
   if(!tid){if(ph)ph.style.display='flex';if(dc)dc.style.display='none';return;}
   if(ph)ph.style.display='none'; if(dc)dc.style.display='block';
   const t = WAPANGAJI.find(x=>x.id===tid); if(!t) return;
-  const mz = parseInt(document.getElementById('inv-miezi').value)||3;
+  const a = acct(t);
+  if(_invLast !== tid){ _invLast = tid; document.getElementById('inv-miezi').value = a.expired ? Math.max(1, a.monthsOverdue) : 3; }
+  const mz = parseInt(document.getElementById('inv-miezi').value)||1;
   const mwezi = document.getElementById('inv-mwezi').value;
-  const lastPay = [...MALIPO].reverse().find(p=>p.id===tid);
-  const mwisho = lastPay?.mpya || t.kuisha;
-  const dl = daysLeft(mwisho);
-
-  // Get selected SC items
-  const scRec = [...SC_DATA].reverse().find(s=>s.id===tid) || {};
+  const start = a.paidThrough, end = addMonthsISO(start, mz);
   const useSC = {
-    maji: document.getElementById('inv-maji')?.checked,
-    usafi: document.getElementById('inv-usafi')?.checked,
-    ulinzi: document.getElementById('inv-ulinzi')?.checked,
-    net: document.getElementById('inv-net')?.checked,
+    maji: document.getElementById('inv-maji')?.checked, usafi: document.getElementById('inv-usafi')?.checked,
+    ulinzi: document.getElementById('inv-ulinzi')?.checked, net: document.getElementById('inv-net')?.checked,
     bill: document.getElementById('inv-bill')?.checked,
   };
   const scAmounts = {
-    maji: parseInt(document.getElementById('inv-maji-amt')?.value)||0,
-    usafi: parseInt(document.getElementById('inv-usafi-amt')?.value)||0,
-    ulinzi: parseInt(document.getElementById('inv-ulinzi-amt')?.value)||0,
-    net: parseInt(document.getElementById('inv-net-amt')?.value)||0,
+    maji: parseInt(document.getElementById('inv-maji-amt')?.value)||0, usafi: parseInt(document.getElementById('inv-usafi-amt')?.value)||0,
+    ulinzi: parseInt(document.getElementById('inv-ulinzi-amt')?.value)||0, net: parseInt(document.getElementById('inv-net-amt')?.value)||0,
     bill: parseInt(document.getElementById('inv-bill-amt')?.value)||0,
   };
-
   const cnt = MALIPO.filter(p=>p.id===tid).length+1;
   const invNo = `INV-${t.id.replace('TEN-','')}-${String(cnt).padStart(3,'0')}`;
-
   document.getElementById('inv-no').textContent = invNo;
   document.getElementById('inv-date-lbl').textContent = 'Tarehe: ' + fmt(new Date().toISOString().slice(0,10));
   document.getElementById('inv-client-info').innerHTML = `
@@ -2126,9 +4729,20 @@ function buildInvoice() {
     <div class="doc-row"><span>Nyumba:</span>${t.nyumba}</div>
     <div class="doc-row"><span>Mkoa:</span>${t.mkoa}</div>
     <div class="doc-row"><span>Mwezi:</span>${mwezi}</div>
-    <div class="doc-row"><span>Mwisho wa Mkataba:</span><strong style="color:${dl>=0?'#1A6B3A':'#C0392B'}">${fmt(mwisho)}</strong></div>
+    <div class="doc-row"><span>Kipindi cha Ankara Hii:</span><strong>${fmt(start)} → ${fmt(end)} (miezi ${mz})</strong></div>
   `;
-
+  // ── Taarifa ya malipo ya awali ──
+  const recent = a.ps.slice(-3).reverse();
+  const rows = recent.length ? recent.map(p=>`<tr><td class="mono">${p.risiti||'—'}</td><td class="mono">${fmt(p.tarehe)}</td><td>${p.kuanza?fmt(p.kuanza)+' → '+fmt(p.mpya):(p.kipindi||'—')}</td><td class="right mono">TZS ${tzs(p.kilipo)}</td><td>${badgeHali(p.hali)}</td></tr>`).join('')
+    : '<tr><td colspan="5" class="small">Hakuna malipo ya awali yaliyorekodiwa kwenye mfumo.</td></tr>';
+  let banner;
+  if(!a.ps.length) banner = `<div style="color:#8A5A00">ℹ️ Hakuna malipo ya awali kwenye mfumo; kodi inahesabiwa kuanzia ${fmt(start)}.</div>`;
+  else if(a.net < 0) banner = `<div style="color:#C0392B">⚠️ <strong>Deni la nyuma</strong> kutoka malipo ya awali: <strong>TZS ${tzs(-a.net)}</strong> (limejumuishwa kwenye jumla hapa chini).</div>`;
+  else if(a.net > 0) banner = `<div style="color:#1A6B3A">✅ Kodi ya awali imelipwa hadi <strong>${fmt(a.paidThrough)}</strong>. <strong>Salio la mbele: TZS ${tzs(a.net)}</strong> (limepunguzwa kwenye jumla).</div>`;
+  else banner = `<div style="color:#1A6B3A">✅ Kodi ya awali <strong>imelipwa kikamilifu</strong> hadi <strong>${fmt(a.paidThrough)}</strong>. Deni la nyuma: <strong>TZS 0</strong>.</div>`;
+  const late = a.expired ? `<div class="small" style="margin-top:4px">Kodi ya awali iliisha ${fmt(a.paidThrough)} (siku ${-a.dl} zilizopita). Ankara hii inadai kipindi kinachofuata.</div>` : '';
+  document.getElementById('inv-statement').innerHTML = `<div class="stmt"><div style="font-weight:700;color:#1B2B5E;margin-bottom:4px">📒 TAARIFA YA MALIPO YA AWALI</div>
+    <table><thead><tr><th>Risiti</th><th>Tarehe</th><th>Kipindi</th><th style="text-align:right">Imelipwa</th><th>Hali</th></tr></thead><tbody>${rows}</tbody></table>${banner}${late}</div>`;
   const lines = [{desc:`Pango la Nyumba — ${t.nyumba}`, rate: t.pango}];
   Object.entries(useSC).forEach(([k,v])=>{
     if(v && scAmounts[k]>0) {
@@ -2137,11 +4751,15 @@ function buildInvoice() {
     }
   });
   let gTotal = 0;
-  document.getElementById('inv-lines').innerHTML = lines.map((l,i)=>{
+  let html = lines.map((l,i)=>{
     const tot = l.rate * mz; gTotal += tot;
     return `<tr><td>${i+1}</td><td>${l.desc}</td><td class="right">TZS ${tzs(l.rate)}</td><td class="center">${mz}</td><td class="right"><strong>TZS ${tzs(tot)}</strong></td></tr>`;
   }).join('');
-  document.getElementById('inv-grand').textContent = 'TZS ' + tzs(gTotal);
+  let due = gTotal;
+  if(a.net < 0){ due += -a.net; html += `<tr><td>+</td><td>Deni la nyuma (kutoka malipo ya awali)</td><td class="right">—</td><td class="center">—</td><td class="right"><strong>TZS ${tzs(-a.net)}</strong></td></tr>`; }
+  if(a.net > 0){ const use = Math.min(a.net, gTotal); due -= use; html += `<tr><td>−</td><td>Salio la mbele (limepunguzwa)</td><td class="right">—</td><td class="center">—</td><td class="right"><strong>− TZS ${tzs(use)}</strong></td></tr>`; }
+  document.getElementById('inv-lines').innerHTML = html;
+  document.getElementById('inv-grand').textContent = 'TZS ' + tzs(due);
 }
 
 // ════════════════════════════════════════
@@ -2176,6 +4794,15 @@ function buildRisiti() {
   document.getElementById('risiti-lines').innerHTML = lines.map(l=>`<tr><td>${l.h}</td><td class="right">TZS ${tzs(l.v)}</td></tr>`).join('');
   document.getElementById('risiti-grand').textContent = 'TZS ' + tzs(p.kilipo);
   document.getElementById('risiti-footer').innerHTML = `${badgeHali(p.hali)} &nbsp;|&nbsp; Risiti: <strong>${p.risiti}</strong> &nbsp;|&nbsp; Njia: ${p.njia} &nbsp;|&nbsp; Hadi: <strong>${fmt(p.mpya)}</strong>`;
+  const _ex = [];
+  if(p.kuanza) _ex.push(`<div class="doc-row"><span>Kipindi Kilicholipiwa:</span><strong>${fmt(p.kuanza)} → ${fmt(p.mpya)}</strong> <span class="small">(miezi ${p.miezi_lipwa} kati ya ${p.miezi})</span></div>`);
+  if(p.salio!==undefined && p.salio>0) _ex.push(`<div class="doc-row"><span>Salio la Mbele (baada ya malipo):</span><strong style="color:#1A6B3A">TZS ${tzs(p.salio)}</strong></div>`);
+  if(p.salio!==undefined && p.salio<0) _ex.push(`<div class="doc-row"><span>Deni Lililobaki (baada ya malipo):</span><strong style="color:#C0392B">TZS ${tzs(-p.salio)}</strong></div>`);
+  document.getElementById('risiti-extra').innerHTML = _ex.join('');
+  ensureVT(p);
+  document.getElementById('risiti-qr').innerHTML = qrSvg(verifyUrl(p.vt));
+  document.getElementById('risiti-qr-no').textContent = p.risiti;
+  if(!p.vsync) pushVerifyRecord(p);
 }
 
 // ════════════════════════════════════════
@@ -2224,7 +4851,7 @@ function saveWP() {
   const obj = {jina,simu,simu2:document.getElementById('m-wp-simu2').value,kit:document.getElementById('m-wp-kit').value,nyumba,mkoa,kuingia:ki,pango,miezi,kuisha,maelezo:document.getElementById('m-wp-me').value,sts:'a'};
   if(xid){
     const i = WAPANGAJI.findIndex(t=>t.id===xid);
-    if(i>=0) WAPANGAJI[i]={...WAPANGAJI[i],...obj};
+    if(i>=0){ const _old=WAPANGAJI[i], _o2={...obj}; if(MALIPO.some(p=>p.id===xid)) _o2.kuisha=_old.kuisha; WAPANGAJI[i]={..._old,..._o2}; }   // kama ana malipo, tarehe ya kuisha inabaki ile ya malipo
   } else {
     const newId = nextTenantId();
     WAPANGAJI.push({na:WAPANGAJI.length+1,id:newId,...obj});
@@ -2305,6 +4932,7 @@ function openMalipoModal(prefill_id) {
   document.getElementById('m-pay-miezi').value=3;
   document.getElementById('m-pay-kilipo').value='';
   document.getElementById('m-pay-me').value='';
+  const _ku=document.getElementById('m-pay-kuanza'); if(_ku) _ku.value='';
   populateTenantSelects();
   if(prefill_id){document.getElementById('m-mal-tenant').value=prefill_id;fillPayPango();}
   openModal('modal-malipo');
@@ -2314,7 +4942,7 @@ function fillPayPango(){
   const id=document.getElementById('m-mal-tenant').value;
   if(!id)return;
   const t=WAPANGAJI.find(x=>x.id===id);
-  if(t){document.getElementById('m-pay-pango').value=t.pango;}
+  if(t){document.getElementById('m-pay-pango').value=t.pango; const _ku=document.getElementById('m-pay-kuanza'); if(_ku) _ku.value=acct(t).paidThrough;}
   calcPay();
 }
 
@@ -2330,6 +4958,7 @@ function calcPay(){
   document.getElementById('pay-calc-jm').textContent='TZS '+tzs(jm);
   document.getElementById('pay-calc-tf').textContent=(tf>=0?'+':'')+'TZS '+tzs(tf);
   document.getElementById('pay-calc-tf').style.color=tf>=0?'#1A6B3A':'#C0392B';
+  payPreview();
 }
 
 function saveMalipo(){
@@ -2344,23 +4973,26 @@ function saveMalipo(){
   const ulinzi=parseInt(document.getElementById('m-pay-ulinzi').value)||0;
   const kilipo=parseInt(document.getElementById('m-pay-kilipo').value)||0;
   const njia=document.getElementById('m-pay-njia').value;
-  const hali=document.getElementById('m-pay-hali').value;
   if(!tarehe||!kilipo){showToast('Jaza tarehe na kilicholipwa','w');return;}
-  const jumla=(pango+maji+usafi+ulinzi)*miezi;
-  const tofauti=kilipo-jumla;
-  const mpyaDate=new Date(tarehe); mpyaDate.setMonth(mpyaDate.getMonth()+miezi);
-  const mpya=mpyaDate.toISOString().slice(0,10);
+  const a0=acct(t);                                   // hali ya mpangaji KABLA ya malipo haya
+  const kuI=(document.getElementById('m-pay-kuanza')||{}).value||'';
+  const kuanza=(kuI && kuI>=a0.paidThrough) ? kuI : a0.paidThrough;   // kipindi hakiwezi kuanza kabla ya kodi ya awali kuisha
+  const r=payCover(a0,kuanza,pango,maji,usafi,ulinzi,miezi,kilipo);
+  const jumla=r.jumla, tofauti=kilipo-jumla, mpya=r.mpya, hali=r.hali;
   const risiti=newRCP(id);
   const mo=['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Ago','Sep','Oct','Nov','Des'];
-  const kp=mo[new Date(tarehe).getMonth()]+'-'+mo[new Date(mpya).getMonth()]+' '+new Date(mpya).getFullYear();
-  MALIPO.push({na:MALIPO.length+1,id,jina:t?.jina||id,nyumba:t?.nyumba||'',mkoa:t?.mkoa||'',tarehe,miezi,pango,maji,usafi,ulinzi,jumla,kilipo,tofauti,njia,risiti,kipindi:kp,hali,mpya,maelezo:document.getElementById('m-pay-me').value});
-  if(t&&hali==='IMELIPWA'){t.kuisha=mpya;t.miezi=miezi;}
-  HISTORIA.push({na:HISTORIA.length+1,id,jina:t?.jina||id,nyumba:t?.nyumba||'',mkoa:t?.mkoa||'',aina:'UHUISHAJI',kuanza:tarehe,miezi,pango,sc:maji+usafi+ulinzi,kuisha:mpya,hali:'HAI',maelezo:'Malipo: '+risiti+' | '+hali});
-  markDirty(); closeModal('modal-malipo'); syncFirebase(); renderMAL(); renderDash(); renderHI();
-  showToast('✓ Malipo '+risiti+' yamehifadhiwa','ok');
+  const kp = r.covered>0 ? mo[new Date(kuanza+'T00:00:00Z').getUTCMonth()]+'-'+mo[new Date(mpya+'T00:00:00Z').getUTCMonth()]+' '+new Date(mpya+'T00:00:00Z').getUTCFullYear() : '—';
+  MALIPO.push({na:MALIPO.reduce((m,q)=>Math.max(m,q.na||0),0)+1,id,jina:t?.jina||id,nyumba:t?.nyumba||'',mkoa:t?.mkoa||'',tarehe,miezi,pango,maji,usafi,ulinzi,jumla,kilipo,tofauti,njia,risiti,kipindi:kp,hali,mpya,
+    kuanza,miezi_lipwa:r.covered,salio:r.salio,vt:genToken(),maelezo:document.getElementById('m-pay-me').value});
+  if(t){ t.kuisha=mpya; if(r.covered>0) t.miezi=miezi; }   // tarehe ya mpangaji inasasishwa KILA wakati (hata malipo ya sehemu)
+  HISTORIA.push({na:HISTORIA.length+1,id,jina:t?.jina||id,nyumba:t?.nyumba||'',mkoa:t?.mkoa||'',aina:'UHUISHAJI',kuanza:kuanza,miezi:r.covered,pango,sc:maji+usafi+ulinzi,kuisha:mpya,hali:(daysLeft(mpya)>=0?'HAI':'IMEISHA'),maelezo:'Malipo: '+risiti+' | '+hali});
+  pushVerifyRecord(MALIPO[MALIPO.length-1]);
+  markDirty(); closeModal('modal-malipo'); syncFirebase(); renderAll();
+  showToast('✓ Malipo '+risiti+' yamehifadhiwa'+(hali!=='IMELIPWA'?' (sehemu: miezi '+r.covered+'/'+miezi+')':''),'ok');
 }
 
 // ════════════════════════════════════════
+// MODAL: SC (Huduma)// ════════════════════════════════════════
 // MODAL: SC (Huduma)
 // ════════════════════════════════════════
 function saveSC(){
@@ -2391,7 +5023,7 @@ function saveMT(){
   const hali=document.getElementById('m-mt-hali').value;
   if(!nyumba||!maelezo){showToast('Jaza nyumba na maelezo','w');return;}
   MATENGENEZO.push({na:MATENGENEZO.length+1,nyumba,aina,maelezo,tarehe,gharama,mlipaji,hali});
-  markDirty(); closeModal('modal-mt'); syncFirebase(); renderMT();
+  markDirty(); closeModal('modal-mt'); syncFirebase(); renderMT(); renderROI(); renderRP();
   showToast('✓ Matengenezo imehifadhiwa','ok');
 }
 
@@ -2599,7 +5231,10 @@ async function bootAdminApp(){
   loadData(); // Load saved data from IndexedDB (nakala ya ndani)
   await pullWapangajiFromCloud(); // ongeza/sasisha na wapangaji halisi kutoka Firestore
   populateTenantSelects();
+  reconcileTenantDates();
   renderAll();
+  backfillVerify();
+  if(window._pendingVerify){ publicOverlayClose(); show('hakiki'); }
 }
 
 
@@ -2631,6 +5266,7 @@ function buildMkataba() {
 
   const t = WAPANGAJI.find(x=>x.id===tid); if(!t) return;
   const n = NYUMBA.find(x=>x.namba===t.nyumba) || {};
+  const _a = acct(t);
   const tarehe = document.getElementById('mkt-tarehe').value || new Date().toISOString().slice(0,10);
   const dhamana = parseInt(document.getElementById('mkt-dhamana').value)||0;
   const onyo = document.getElementById('mkt-onyo').value || '30';
@@ -2664,6 +5300,7 @@ function buildMkataba() {
     ['Aina', n.aina||'—'],
     ['Tarehe ya Kuingia', fmt(t.kuingia)],
     ['Mwisho wa Mkataba', fmt(t.kuisha)],
+    ['Hali ya Malipo', _a.deni>0 ? 'Deni: TZS '+tzs(_a.deni)+' (miezi '+_a.monthsOverdue+' imechelewa)' : (_a.salio>0 ? 'Imelipwa hadi '+fmt(_a.paidThrough)+' — salio la mbele TZS '+tzs(_a.salio) : 'Imelipwa hadi '+fmt(_a.paidThrough))],
     ['Miezi ya Mkataba', t.miezi + ' miezi'],
     ['Pango la Kila Mwezi', 'TZS ' + tzs(t.pango)],
     ['Dhamana', dhamana > 0 ? 'TZS ' + tzs(dhamana) : 'Hakuna'],
@@ -2711,5 +5348,6 @@ function buildMkataba() {
 
 </div><!-- /#admin-app-content -->
 
+<div class="no-print" style="position:fixed;left:8px;bottom:6px;font-size:10px;opacity:.45;pointer-events:none;z-index:50">Toleo 2.0</div>
 </body>
 </html>
