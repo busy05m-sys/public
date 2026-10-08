@@ -844,7 +844,7 @@
   <div id="risiti-extra" style="padding:8px 18px;font-size:.78rem"></div>
   <div style="display:flex;align-items:center;gap:14px;padding:6px 18px 14px">
     <div id="risiti-qr" class="rqr"></div>
-    <div style="font-size:.7rem;color:#555;line-height:1.5"><strong>Hakiki risiti hii</strong><br>Piga picha barcode kwa kamera ya simu, au fungua <strong>tenant.kiseja.com</strong> → <strong>Hakiki</strong> na uandike namba <span id="risiti-qr-no" class="mono"></span></div>
+    <div style="font-size:.7rem;color:#555;line-height:1.5"><strong>Hakiki risiti hii</strong><br>Piga picha barcode kwa kamera ya simu, au fungua <strong>nyumba.kiseja.com</strong> (sehemu ya wapangaji) → <strong>Hakiki Risiti</strong> na uandike namba <span id="risiti-qr-no" class="mono"></span></div>
   </div>
   <div class="doc-footer" id="risiti-footer"></div>
 </div>
@@ -4057,13 +4057,13 @@ function payPreview(){
 // ════════════════════════════════════════
 // BARCODE (QR) YA RISITI NA UHAKIKI
 // ════════════════════════════════════════
-const VERIFY_BASE = 'https://tenant.kiseja.com/';
+const VERIFY_BASE = 'https://nyumba.kiseja.com/';
 function genToken(){
   const a = new Uint8Array(8);
   try{ (window.crypto||window.msCrypto).getRandomValues(a); }catch(e){ for(let i=0;i<8;i++) a[i]=Math.floor(Math.random()*256); }
   return Array.from(a).map(b=>b.toString(16).padStart(2,'0')).join('');
 }
-function verifyUrl(vt){ return VERIFY_BASE + '?h=' + vt; }
+function verifyUrl(no){ return VERIFY_BASE + '?hakiki=' + encodeURIComponent(no); }
 function qrSvg(text){
   const q = qrcode(0, 'M'); q.addData(text); q.make();
   const n = q.getModuleCount(), m = 2, size = n + 2*m;
@@ -4105,7 +4105,7 @@ function reconcileTenantDates(){
 function hkParse(raw){
   raw = (raw||'').trim(); if(!raw) return null;
   if(/^https?:\/\//i.test(raw)){
-    try{ const u = new URL(raw); const h = u.searchParams.get('h') || u.searchParams.get('hakiki'); if(h) return {tok:h.trim().toLowerCase()}; }catch(e){}
+    try{ const u = new URL(raw); const hv = (u.searchParams.get('hakiki')||u.searchParams.get('h')||'').trim(); if(/^RCP-/i.test(hv)) return {no:hv.toUpperCase()}; if(hv) return {tok:hv.toLowerCase()}; }catch(e){}
     return null;
   }
   if(/^[0-9a-f]{16}$/i.test(raw)) return {tok: raw.toLowerCase()};
@@ -4145,10 +4145,7 @@ function hakikiFromInput(){ hakikiLookup(document.getElementById('hk-no').value)
 function renderHakiki(){
   const out = document.getElementById('hk-result'); if(out && !out.innerHTML) out.innerHTML = '';
   const sy = document.getElementById('hk-sync');
-  if(sy){ const n = MALIPO.length, c = MALIPO.filter(p=>p.vsync).length;
-    sy.innerHTML = window._verifyWriteFailed
-      ? '⚠️ Uhakiki wa <strong>umma</strong> (mtu asiye msimamizi akipiga QR) haujawezeshwa: Firebase imekataa kuandika rekodi ya uhakiki. Uhakiki ndani ya programu hii unafanya kazi kawaida.'
-      : `Uhakiki wa umma kupitia QR: risiti <strong>${c}</strong> kati ya <strong>${n}</strong> zimesawazishwa mtandaoni.`; }
+  if(sy) sy.innerHTML = 'Mteja anaweza kuhakiki risiti kwenye <strong>nyumba.kiseja.com</strong> (Hakiki Risiti), au kwa kupiga barcode kwa kamera ya simu.';
   if(window._pendingVerify){ const v = window._pendingVerify; window._pendingVerify = null; document.getElementById('hk-no').value = v; hakikiLookup(v); }
 }
 let _scanStream = null, _scanRAF = 0, _jsqrP = null;
@@ -4201,25 +4198,13 @@ function publicOverlay(html){
     <div style="margin-top:14px"><button class="btn btn-sec" onclick="publicOverlayClose()">Ingia kama msimamizi</button></div></div>`;
 }
 function publicOverlayClose(){ const ov = document.getElementById('pub-verify'); if(ov) ov.remove(); }
-async function publicVerify(tok){
-  publicOverlay('<div class="small">⏳ Inahakiki risiti...</div>');
-  try{
-    if(!firebase.auth().currentUser){ await firebase.auth().signInAnonymously(); }
-    const d = await _fbdb.collection('risiti_hakiki').doc(tok).get();
-    if(!d.exists){ publicOverlay(hkCard(false, '<div class="small">Risiti hii haipatikani. Inaweza kuwa si ya kweli, au bado haijasawazishwa mtandaoni.</div>')); return; }
-    const r = d.data();
-    publicOverlay(hkCard(true, `
-      <div class="doc-row"><span>Namba ya Risiti:</span><strong>${String(r.n||'').replace(/</g,'&lt;')}</strong></div>
-      <div class="doc-row"><span>Tarehe:</span>${fmt(r.t)}</div>
-      <div class="doc-row"><span>Nyumba:</span>${String(r.ny||'').replace(/</g,'&lt;')}</div>
-      <div class="doc-row"><span>Kipindi:</span>${String(r.kp||'—').replace(/</g,'&lt;')}</div>
-      <div class="doc-row"><span>Kiasi Kilicholipwa:</span><strong style="color:#1A6B3A">TZS ${tzs(r.k)}</strong></div>
-      <div class="doc-row"><span>Kodi Hadi:</span><strong>${fmt(r.h)}</strong></div>
-      <div class="doc-row"><span>Hali:</span>${badgeHali(r.s)}</div>
-      <div class="small" style="margin-top:8px;color:#6B7280">Taarifa binafsi (jina, simu) hazionyeshwi hapa.</div>`));
-  }catch(e){
-    publicOverlay(hkCard(false, '<div class="small">Haikuweza kuhakikiwa mtandaoni sasa hivi. Jaribu tena au wasiliana na msimamizi.</div>'));
-  }
+function publicVerify(v){
+  const isNo = /^rcp-/i.test(v);
+  const url = VERIFY_BASE + (isNo ? '?hakiki=' + encodeURIComponent(v.toUpperCase()) : '');
+  publicOverlay('<div class="small" style="margin-bottom:12px;line-height:1.6">Uhakiki wa risiti sasa unafanyika kwenye <strong>nyumba.kiseja.com</strong> (sehemu ya wapangaji).'
+    + (isNo ? ' Inakupeleka huko...' : ' Kiungo hiki ni cha zamani: fungua <strong>nyumba.kiseja.com</strong>, bofya <strong>Hakiki Risiti</strong>, kisha uandike namba iliyo kwenye risiti.')
+    + '</div><a class="btn btn-pri" href="' + url + '" style="text-decoration:none;display:inline-block">Fungua nyumba.kiseja.com</a>');
+  if(isNo) setTimeout(function(){ if(document.getElementById('pub-verify')){ try{ location.replace(url); }catch(e){} } }, 1500);
 }
 if(_vTok){ window._pendingVerify = _vTok; document.addEventListener('DOMContentLoaded', ()=>publicVerify(_vTok)); if(document.readyState!=='loading') publicVerify(_vTok); }
 
@@ -4494,7 +4479,6 @@ function delMalipo(na) {
   }
   for(let i=HISTORIA.length-1;i>=0;i--){ if((HISTORIA[i].maelezo||'').indexOf('Malipo: '+p.risiti+' |')===0) HISTORIA.splice(i,1); }
   HISTORIA.forEach((h,i)=>h.na=i+1);
-  if(p.vt){ try{ _fbdb.collection('risiti_hakiki').doc(p.vt).delete().catch(function(){}); }catch(e){} }
   try{   // futa nakala ya wingu (kwa kitambulisho na kwa namba ya risiti) ili wapangaji wasione malipo yaliyofutwa
     const sub = _fbdb.collection('wapangaji').doc(p.id).collection('malipo');
     sub.doc(String(p.na)).delete().catch(function(){});
@@ -4913,9 +4897,8 @@ function buildRisiti() {
   if(p.salio!==undefined && p.salio<0) _ex.push(`<div class="doc-row"><span>Deni Lililobaki (baada ya malipo):</span><strong style="color:#C0392B">TZS ${tzs(-p.salio)}</strong></div>`);
   document.getElementById('risiti-extra').innerHTML = _ex.join('');
   ensureVT(p);
-  document.getElementById('risiti-qr').innerHTML = qrSvg(verifyUrl(p.vt));
+  document.getElementById('risiti-qr').innerHTML = qrSvg(verifyUrl(p.risiti));
   document.getElementById('risiti-qr-no').textContent = p.risiti;
-  if(!p.vsync) pushVerifyRecord(p);
 }
 
 // ════════════════════════════════════════
@@ -5113,7 +5096,6 @@ function saveMalipo(){
     kuanza,miezi_lipwa:r.covered,salio:r.salio,vt:genToken(),maelezo:document.getElementById('m-pay-me').value});
   if(t){ t.kuisha=mpya; if(r.covered>0) t.miezi=miezi; }   // tarehe ya mpangaji inasasishwa KILA wakati (hata malipo ya sehemu)
   HISTORIA.push({na:HISTORIA.length+1,id,jina:t?.jina||id,nyumba:t?.nyumba||'',mkoa:t?.mkoa||'',aina:'UHUISHAJI',kuanza:kuanza,miezi:r.covered,pango,sc:maji+usafi+ulinzi,kuisha:mpya,hali:(daysLeft(mpya)>=0?'HAI':'IMEISHA'),maelezo:'Malipo: '+risiti+' | '+hali});
-  pushVerifyRecord(MALIPO[MALIPO.length-1]);
   markDirty(); closeModal('modal-malipo'); syncFirebase(); renderAll();
   showToast('✓ Malipo '+risiti+' yamehifadhiwa'+(hali!=='IMELIPWA'?' (sehemu: miezi '+r.covered+'/'+miezi+')':''),'ok');
 }
@@ -5360,7 +5342,7 @@ async function bootAdminApp(){
   populateTenantSelects();
   reconcileTenantDates();
   renderAll();
-  backfillVerify();
+  syncFirebase();   // hakikisha malipo yote yapo wingu ili wateja wahakiki risiti kwenye nyumba.kiseja.com
   if(window._pendingVerify){ publicOverlayClose(); show('hakiki'); }
 }
 
@@ -5476,6 +5458,6 @@ function buildMkataba() {
 
 </div><!-- /#admin-app-content -->
 
-<div class="no-print" style="position:fixed;left:8px;bottom:6px;font-size:10px;opacity:.45;pointer-events:none;z-index:50">Toleo 2.1</div>
+<div class="no-print" style="position:fixed;left:8px;bottom:6px;font-size:10px;opacity:.45;pointer-events:none;z-index:50">Toleo 2.2</div>
 </body>
 </html>
