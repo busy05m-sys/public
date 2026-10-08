@@ -742,9 +742,14 @@
     <div style="font-size:.72rem;font-weight:700;color:#6B7280;text-transform:uppercase;margin-bottom:10px">Chagua Mpangaji</div>
     <select id="inv-tenant" onchange="buildInvoice()" style="border:1px solid var(--border);border-radius:6px;padding:8px 10px;font-size:.8rem;width:100%;font-family:inherit;margin-bottom:10px"></select>
     <div style="font-size:.72rem;font-weight:700;color:#6B7280;text-transform:uppercase;margin-bottom:6px">Mwezi wa Malipo</div>
-    <input type="text" id="inv-mwezi" value="Agosti 2026" oninput="buildInvoice()" style="border:1px solid var(--border);border-radius:6px;padding:8px;font-size:.8rem;width:100%;font-family:inherit;margin-bottom:10px">
+    <input type="text" id="inv-mwezi" value="" oninput="this.dataset.manual='1';buildInvoice()" style="border:1px solid var(--border);border-radius:6px;padding:8px;font-size:.8rem;width:100%;font-family:inherit;margin-bottom:10px">
     <div style="font-size:.72rem;font-weight:700;color:#6B7280;text-transform:uppercase;margin-bottom:6px">Miezi</div>
     <input type="number" id="inv-miezi" value="3" min="1" oninput="buildInvoice()" style="border:1px solid var(--border);border-radius:6px;padding:8px;font-size:.8rem;width:100%;font-family:inherit;margin-bottom:14px">
+    <div style="font-size:.72rem;font-weight:700;color:#6B7280;text-transform:uppercase;margin:-6px 0 6px">Kuanzia Tarehe</div>
+    <input type="date" id="inv-kuanza" onchange="invDatesChanged('kuanza')" style="border:1px solid var(--border);border-radius:6px;padding:8px;font-size:.8rem;width:100%;font-family:inherit;margin-bottom:10px">
+    <div style="font-size:.72rem;font-weight:700;color:#6B7280;text-transform:uppercase;margin-bottom:6px">Hadi Tarehe <span style="text-transform:none;font-weight:400">(chagua kwa kalenda)</span></div>
+    <input type="date" id="inv-hadi" onchange="invDatesChanged('hadi')" style="border:1px solid var(--border);border-radius:6px;padding:8px;font-size:.8rem;width:100%;font-family:inherit;margin-bottom:6px">
+    <div id="inv-hint" class="small" style="margin-bottom:14px;color:#8A5A00"></div>
     <div style="font-size:.72rem;font-weight:700;color:#6B7280;text-transform:uppercase;margin-bottom:8px">Huduma za Ziada</div>
     <div style="display:flex;flex-direction:column;gap:8px;font-size:.8rem">
       <label style="display:flex;align-items:center;gap:6px;cursor:pointer">
@@ -990,17 +995,33 @@
     <div class="form-group"><label>Jina Kamili *</label><input id="m-wp-jina" placeholder="Jina kamili la mpangaji"></div>
     <div class="form-group"><label>Simu * </label><input id="m-wp-simu" placeholder="07xxxxxxxx"></div>
     <div class="form-group"><label>Simu 2</label><input id="m-wp-simu2" placeholder="Hiari"></div>
-    <div class="form-group"><label>Kitambulisho</label><input id="m-wp-kit" placeholder="Namba ya kitambulisho"></div>
+    <div class="form-group"><label>Aina ya Kitambulisho</label><select id="m-wp-kit-aina"><option value="">— Chagua —</option><option>NIDA</option><option>Leseni ya Udereva</option><option>Kitambulisho cha Kupigia Kura</option><option>Pasipoti</option><option>Kitambulisho cha Kazi</option><option>Nyingine</option></select></div>
+    <div class="form-group"><label>Namba ya Kitambulisho (NIDA n.k.)</label><input id="m-wp-kit" placeholder="Mfano NIDA: tarakimu 20"></div>
     <div class="form-group"><label>Nyumba *</label><select id="m-wp-nyumba"></select></div>
     <div class="form-group"><label>Tarehe ya Kuingia *</label><input type="date" id="m-wp-ki"></div>
     <div class="form-group"><label>Pango/Mwezi (TZS) *</label><input type="number" id="m-wp-pango" placeholder="0"></div>
     <div class="form-group"><label>Miezi ya Mkataba *</label><input type="number" id="m-wp-miezi" value="3" min="1"></div>
+  </div>
+  <div style="font-size:.72rem;font-weight:700;color:#6B7280;text-transform:uppercase;margin:4px 0 6px">👥 Mtu wa Karibu (kwa dharura — ajali, ugonjwa)</div>
+  <div class="form-grid">
+    <div class="form-group"><label>Jina la Mtu wa Karibu</label><input id="m-wp-ndugu" placeholder="Jina kamili"></div>
+    <div class="form-group"><label>Namba ya Simu Yake</label><input id="m-wp-ndugu-simu" placeholder="07xxxxxxxx"></div>
+    <div class="form-group"><label>Uhusiano</label><select id="m-wp-ndugu-rel"><option value="">— Chagua —</option><option>Mke/Mume</option><option>Mzazi</option><option>Ndugu</option><option>Mtoto</option><option>Rafiki</option><option>Mwajiri</option><option>Nyingine</option></select></div>
   </div>
   <div class="form-group" style="margin-bottom:12px"><label>Maelezo</label><textarea id="m-wp-me" rows="2" placeholder="Maelezo ya ziada..."></textarea></div>
   <div class="modal-footer">
     <button class="btn btn-sec" onclick="closeModal('modal-wp')">Ghairi</button>
     <button class="btn btn-pri" onclick="saveWP()">💾 Hifadhi</button>
   </div>
+</div>
+</div>
+
+<div id="modal-info" class="modal-overlay">
+<div class="modal-box" style="max-width:460px">
+  <button class="modal-close" onclick="closeModal('modal-info')">✕</button>
+  <h3>ℹ️ Taarifa za Mpangaji</h3>
+  <div id="info-body" style="font-size:.8rem"></div>
+  <div class="modal-footer"><button class="btn btn-sec" onclick="closeModal('modal-info')">Funga</button></div>
 </div>
 </div>
 
@@ -1012,7 +1033,8 @@
   <div style="background:#FDECEA;border-left:3px solid #C0392B;border-radius:6px;padding:10px 14px;font-size:.78rem;margin-bottom:14px;color:#C0392B">
     ⚠️ Mpangaji ataondolewa kwenye orodha ya wanaolipa. Historia itahifadhiwa.
   </div>
-  <div class="form-group" style="margin-bottom:10px"><label>Tarehe ya Kuondoka</label><input type="date" id="m-hm-td"></div>
+  <div id="m-hm-bal" style="background:#F7F5F0;border-radius:6px;padding:10px 14px;font-size:.78rem;margin-bottom:12px"></div>
+  <div class="form-group" style="margin-bottom:10px"><label>Tarehe ya Kuondoka</label><input type="date" id="m-hm-td" onchange="hamaRefresh()"></div>
   <div class="form-group" style="margin-bottom:10px"><label>Sababu ya Kuondoka *</label><textarea id="m-hm-sababu" rows="3" placeholder="Eleza sababu ya kuondoka..."></textarea></div>
   <div class="form-group" style="margin-bottom:14px"><label>Maelezo ya Malipo ya Mwisho (hiari)</label><input id="m-hm-mpangaji" placeholder="Mfano: Alikuwa na deni la TZS 50,000"></div>
   <div class="modal-footer">
@@ -1075,6 +1097,7 @@
     <span>Tofauti: <strong id="pay-calc-tf" style="color:#1A6B3A">TZS 0</strong></span>
   </div>
   <div class="form-group" style="margin-bottom:10px"><label>Kipindi kianze tarehe <span class="small">(kinaanza kodi ya awali ilipoisha; badilisha tu kama kuna pengo)</span></label><input type="date" id="m-pay-kuanza" oninput="calcPay()"></div>
+  <div class="form-group" style="margin-bottom:10px"><label>Hadi tarehe <span class="small">(chagua kwa kalenda — miezi itahesabiwa yenyewe)</span></label><input type="date" id="m-pay-hadi" onchange="payHadiChanged()"></div>
   <div id="pay-calc-cover" style="background:#F0F7F2;border:1px solid #CFE6D6;border-radius:8px;padding:9px 12px;font-size:.78rem;margin-bottom:10px;display:none"></div>
   <div class="form-group" style="margin-bottom:12px"><label>Maelezo (hiari)</label><textarea id="m-pay-me" rows="2" placeholder="Maelezo ya ziada..."></textarea></div>
   <div class="modal-footer">
@@ -3669,7 +3692,7 @@ function syncFirebase() {
       nyumba: t.nyumba||'', mkoa: t.mkoa||'',
       kuingia: t.kuingia||'', kuisha: t.kuisha||'',
       pango: parseInt(t.pango)||0, miezi: parseInt(t.miezi)||3,
-      sts: t.sts||'a', kit: t.kit||'',
+      sts: t.sts||'a', kit: firebase.firestore.FieldValue.delete(),   // kitambulisho hakitumwi wingu; namba za zamani zinafutwa huko
       deni: (typeof acct==='function'?acct(t).deni:0), salio: (typeof acct==='function'?acct(t).salio:0)
     }, {merge:true}).catch(function(){});
   });
@@ -4022,6 +4045,7 @@ function payPreview(){
   let start = (ku && ku.value) || a.paidThrough; if(start < a.paidThrough) start = a.paidThrough;
   const g = k => parseInt((document.getElementById(k)||{}).value)||0;
   const r = payCover(a, start, g('m-pay-pango'), g('m-pay-maji'), g('m-pay-usafi'), g('m-pay-ulinzi'), g('m-pay-miezi')||1, g('m-pay-kilipo'));
+  const _hd = document.getElementById('m-pay-hadi'); if(_hd && document.activeElement !== _hd) _hd.value = addMonthsISO(start, g('m-pay-miezi')||1);
   box.style.display = 'block';
   box.innerHTML = `📅 Kipindi: <strong>${fmt(start)}</strong> → <strong>${fmt(r.mpya)}</strong> (miezi ${r.covered}/${g('m-pay-miezi')||1} imefunikwa) · `
     + (r.hali==='IMELIPWA' ? '✅ Imelipwa kikamilifu' : r.hali==='SEHEMU' ? '🟠 Malipo ya sehemu' : '⚪ Hakuna kilicholipwa')
@@ -4199,6 +4223,86 @@ async function publicVerify(tok){
 }
 if(_vTok){ window._pendingVerify = _vTok; document.addEventListener('DOMContentLoaded', ()=>publicVerify(_vTok)); if(document.readyState!=='loading') publicVerify(_vTok); }
 
+// ════════════════════════════════════════
+// v2.1: KALENDA YA KIPINDI, KITAMBULISHO NA MTU WA KARIBU, KUHAMA
+// ════════════════════════════════════════
+const escH = s => String(s==null?'':s).replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+// Miezi kati ya tarehe mbili (inakaribia mwezi mzima wa karibu zaidi; angalau 1)
+function monthsBetween(startISO, endISO){
+  const s = new Date(startISO+'T00:00:00Z'), e = new Date(endISO+'T00:00:00Z');
+  if(isNaN(s) || isNaN(e) || e <= s) return 1;
+  let m = (e.getUTCFullYear()-s.getUTCFullYear())*12 + (e.getUTCMonth()-s.getUTCMonth());
+  const diff = (e - new Date(addMonthsISO(startISO, m)+'T00:00:00Z'))/86400000;
+  if(diff > 15) m += 1; else if(diff < -15) m -= 1;
+  return Math.max(1, Math.min(120, m));
+}
+const MIEZI_SW = ['Januari','Februari','Machi','Aprili','Mei','Juni','Julai','Agosti','Septemba','Oktoba','Novemba','Desemba'];
+function periodLabelSw(startISO, endISO){
+  const s = new Date(startISO+'T00:00:00Z'), e = new Date(endISO+'T00:00:00Z'); e.setUTCDate(e.getUTCDate()-1);
+  if(isNaN(s)||isNaN(e)) return '';
+  const a = MIEZI_SW[s.getUTCMonth()], b = MIEZI_SW[e.getUTCMonth()];
+  if(s.getUTCFullYear()===e.getUTCFullYear()) return (a===b) ? `${a} ${s.getUTCFullYear()}` : `${a} – ${b} ${e.getUTCFullYear()}`;
+  return `${a} ${s.getUTCFullYear()} – ${b} ${e.getUTCFullYear()}`;
+}
+// Invoice: kuchagua kipindi kwa kalenda ("hadi tarehe") — miezi inahesabiwa yenyewe
+function invDatesChanged(src){
+  const t = WAPANGAJI.find(x=>x.id===document.getElementById('inv-tenant').value); if(!t) return;
+  const a = acct(t), ku = document.getElementById('inv-kuanza'), hd = document.getElementById('inv-hadi');
+  let start = ku.value || a.paidThrough; if(start < a.paidThrough) start = a.paidThrough;
+  if(src==='hadi' && hd.value) document.getElementById('inv-miezi').value = monthsBetween(start, hd.value);
+  buildInvoice();
+}
+// Fomu ya malipo: kuchagua "hadi tarehe" kwa kalenda
+function payHadiChanged(){
+  const t = WAPANGAJI.find(x=>x.id===(document.getElementById('m-mal-tenant')||{}).value);
+  if(!t){ showToast('Chagua mpangaji kwanza','w'); return; }
+  const a = acct(t), ku = document.getElementById('m-pay-kuanza'), hd = document.getElementById('m-pay-hadi').value;
+  let start = (ku && ku.value) || a.paidThrough; if(start < a.paidThrough) start = a.paidThrough;
+  if(!hd) return;
+  document.getElementById('m-pay-miezi').value = monthsBetween(start, hd);
+  calcPay();
+}
+// Taarifa za mpangaji (simu, kitambulisho, mtu wa karibu) — kwa dharura
+function openTenantInfo(id){
+  const t = WAPANGAJI.find(x=>x.id===id); if(!t) return;
+  const tel = n => n ? `<a href="tel:${escH(String(n).replace(/[^0-9+]/g,''))}">${escH(n)}</a>` : '—';
+  const row = (l,v) => `<div class="doc-row"><span>${l}:</span><strong>${v}</strong></div>`;
+  const kin = (t.nduguJina||t.nduguSimu)
+    ? row('Jina', escH(t.nduguJina||'—')) + row('Simu', tel(t.nduguSimu)) + row('Uhusiano', escH(t.nduguUhusiano||'—'))
+    : '<div style="background:#FFF4E5;border-radius:6px;padding:8px 10px;font-size:.78rem;color:#8A5A00">⚠️ Hakuna mtu wa karibu aliyewekwa. Bofya <strong>Hariri</strong> ili kuongeza (muhimu kwa dharura).</div>';
+  document.getElementById('info-body').innerHTML = `
+    <div style="font-weight:700;margin-bottom:6px">${escH(t.jina)} <span class="small">(${escH(t.id)} · ${escH(t.nyumba)})</span></div>
+    ${row('Simu', tel(t.simu))}${t.simu2?row('Simu 2', tel(t.simu2)):''}
+    ${row('Kitambulisho', t.kit ? escH((t.kitAina?t.kitAina+': ':'')+t.kit) : '—')}
+    ${row('Kodi Imelipwa Hadi', fmt(t.kuisha))}
+    <div style="font-size:.72rem;font-weight:700;color:#6B7280;text-transform:uppercase;margin:12px 0 6px">👥 Mtu wa Karibu (dharura)</div>${kin}`;
+  openModal('modal-info');
+}
+// Mpangaji anapoondoka: deni au kodi ya mbele isisahaulike
+function hamaSummary(t, td){
+  const a = acct(t), out = []; let prepaidDays = 0, prepaidAmt = 0;
+  if(a.deni > 0) out.push(`<div style="color:#C0392B">⚠️ <strong>Ana deni la kodi: TZS ${tzs(a.deni)}</strong> (miezi ${a.monthsOverdue}${a.net<0?', pamoja na deni la nyuma':''}).</div>`);
+  if(td && a.paidThrough > td){
+    prepaidDays = Math.round((new Date(a.paidThrough+'T00:00:00Z') - new Date(td+'T00:00:00Z'))/86400000);
+    prepaidAmt = Math.round(a.rent * prepaidDays / 30.4375);
+    out.push(`<div style="color:#1A6B3A">💚 Alilipa kodi ya mbele hadi ${fmt(a.paidThrough)}: siku ${prepaidDays} baada ya kuondoka (takriban <strong>TZS ${tzs(prepaidAmt)}</strong>). Amua kama atarudishiwa.</div>`);
+  }
+  if(a.salio > 0) out.push(`<div style="color:#1A6B3A">💚 Salio la mbele: <strong>TZS ${tzs(a.salio)}</strong>.</div>`);
+  return {a, prepaidDays, prepaidAmt, html: out.join('') || '<div class="small">Hakuna deni wala kodi ya mbele.</div>'};
+}
+function hamaRefresh(){
+  const t = WAPANGAJI.find(x=>x.id===document.getElementById('m-hm-id').value), el = document.getElementById('m-hm-bal');
+  if(t && el) el.innerHTML = hamaSummary(t, document.getElementById('m-hm-td').value).html;
+}
+// Ukaguzi laini (haukatazi kuhifadhi): NIDA ina tarakimu 20; simu ya Tanzania ina tarakimu 10 (0…) au +255…
+function checkTenantInputs(aina, kit, simus){
+  const w = [];
+  if(kit){ const d = kit.replace(/\D/g,''); if(aina==='NIDA' && d.length!==20) w.push('Namba ya NIDA kwa kawaida ina tarakimu 20'); }
+  simus.forEach(([lbl,s])=>{ if(s){ const d = s.replace(/[\s-]/g,''); if(!/^(\+?255|0)\d{9}$/.test(d)) w.push(lbl+' haionekani kama namba ya simu ya Tanzania'); } });
+  return w;
+}
+
+
 function renderAll() {
   populateTenantSelects();
   renderDash(); renderWP(); renderNY(); renderHI(); renderMAL();
@@ -4285,6 +4389,7 @@ function renderWP() {
       <td class="center">${t.miezi}</td><td class="mono">${fmt(t.kuisha)}</td>
       <td>${badgeHali(h)}</td><td class="right mono">${t.sts==='a'?debtCell(acct(t)):'—'}</td>
       <td class="no-print" style="white-space:nowrap">
+        <button class="btn-sm btn-sec" onclick="openTenantInfo('${t.id}')" title="Taarifa na mtu wa karibu">ℹ️</button>
         <button class="btn-sm btn-sec" onclick="openEditWP('${t.id}')">✏️ Hariri</button>
         ${t.sts==='a'?`<button class="btn-sm btn-danger" onclick="openHamaModal('${t.id}')">🚪 Hama</button>
         <button class="btn-sm btn-pri" onclick="openMalipoModal('${t.id}')">💰 Malipo</button>`:''}
@@ -4705,10 +4810,18 @@ function buildInvoice() {
   if(ph)ph.style.display='none'; if(dc)dc.style.display='block';
   const t = WAPANGAJI.find(x=>x.id===tid); if(!t) return;
   const a = acct(t);
-  if(_invLast !== tid){ _invLast = tid; document.getElementById('inv-miezi').value = a.expired ? Math.max(1, a.monthsOverdue) : 3; }
-  const mz = parseInt(document.getElementById('inv-miezi').value)||1;
-  const mwezi = document.getElementById('inv-mwezi').value;
-  const start = a.paidThrough, end = addMonthsISO(start, mz);
+  if(_invLast !== tid){ _invLast = tid; document.getElementById('inv-miezi').value = 3; document.getElementById('inv-kuanza').value = a.paidThrough; }
+  const mz = Math.max(1, parseInt(document.getElementById('inv-miezi').value)||3);
+  let start = document.getElementById('inv-kuanza').value || a.paidThrough, notes = [];
+  if(start < a.paidThrough){ start = a.paidThrough; notes.push('Kipindi hakiwezi kuanza kabla kodi ya awali kuisha ('+fmt(a.paidThrough)+').'); }
+  document.getElementById('inv-kuanza').value = start;
+  const end = addMonthsISO(start, mz);
+  if(document.activeElement !== document.getElementById('inv-hadi')) document.getElementById('inv-hadi').value = end;
+  if(a.expired && a.monthsOverdue > mz) notes.push('⚠️ Kodi imechelewa miezi '+a.monthsOverdue+'; miezi '+mz+' haitoshi kufidia deni lote — chagua '+a.monthsOverdue+' au zaidi.');
+  document.getElementById('inv-hint').innerHTML = notes.join('<br>');
+  const mwEl = document.getElementById('inv-mwezi');
+  if(!mwEl.dataset.manual) mwEl.value = periodLabelSw(start, end);
+  const mwezi = mwEl.value;
   const useSC = {
     maji: document.getElementById('inv-maji')?.checked, usafi: document.getElementById('inv-usafi')?.checked,
     ulinzi: document.getElementById('inv-ulinzi')?.checked, net: document.getElementById('inv-net')?.checked,
@@ -4811,7 +4924,7 @@ function buildRisiti() {
 function openAddWP() {
   document.getElementById('m-wp-title').textContent = 'Mpangaji Mpya';
   document.getElementById('m-wp-id').value = '';
-  ['m-wp-jina','m-wp-simu','m-wp-simu2','m-wp-kit','m-wp-me'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
+  ['m-wp-jina','m-wp-simu','m-wp-simu2','m-wp-kit','m-wp-me','m-wp-kit-aina','m-wp-ndugu','m-wp-ndugu-simu','m-wp-ndugu-rel'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
   document.getElementById('m-wp-ki').value = new Date().toISOString().slice(0,10);
   document.getElementById('m-wp-pango').value = '';
   document.getElementById('m-wp-miezi').value = 3;
@@ -4827,6 +4940,10 @@ function openEditWP(id) {
   document.getElementById('m-wp-simu').value = t.simu;
   document.getElementById('m-wp-simu2').value = t.simu2||'';
   document.getElementById('m-wp-kit').value = t.kit||'';
+  document.getElementById('m-wp-kit-aina').value = t.kitAina||'';
+  document.getElementById('m-wp-ndugu').value = t.nduguJina||'';
+  document.getElementById('m-wp-ndugu-simu').value = t.nduguSimu||'';
+  document.getElementById('m-wp-ndugu-rel').value = t.nduguUhusiano||'';
   document.getElementById('m-wp-nyumba').value = t.nyumba;
   document.getElementById('m-wp-ki').value = t.kuingia;
   document.getElementById('m-wp-pango').value = t.pango;
@@ -4845,10 +4962,13 @@ function saveWP() {
   const pango = parseInt(document.getElementById('m-wp-pango').value)||0;
   const miezi = parseInt(document.getElementById('m-wp-miezi').value)||3;
   if(!jina||!simu||!nyumba||!ki||!pango){showToast('Jaza sehemu zote (*)','w');return;}
-  const ke = new Date(ki); ke.setMonth(ke.getMonth()+miezi);
-  const kuisha = ke.toISOString().slice(0,10);
+  const kuisha = addMonthsISO(ki, miezi);
+  const _kitAina = document.getElementById('m-wp-kit-aina').value, _kit = document.getElementById('m-wp-kit').value.trim();
+  const _nj = document.getElementById('m-wp-ndugu').value.trim(), _ns = document.getElementById('m-wp-ndugu-simu').value.trim(), _nr = document.getElementById('m-wp-ndugu-rel').value;
+  const _warn = checkTenantInputs(_kitAina, _kit, [['Simu', simu], ['Simu ya mtu wa karibu', _ns]]);
+  if(_warn.length) showToast('⚠️ '+_warn.join(' · ')+' — imehifadhiwa, hakiki tena','w');
   const mkoa = NYUMBA.find(n=>n.namba===nyumba)?.mkoa||'';
-  const obj = {jina,simu,simu2:document.getElementById('m-wp-simu2').value,kit:document.getElementById('m-wp-kit').value,nyumba,mkoa,kuingia:ki,pango,miezi,kuisha,maelezo:document.getElementById('m-wp-me').value,sts:'a'};
+  const obj = {jina,simu,simu2:document.getElementById('m-wp-simu2').value,kit:_kit,kitAina:_kitAina,nduguJina:_nj,nduguSimu:_ns,nduguUhusiano:_nr,nyumba,mkoa,kuingia:ki,pango,miezi,kuisha,maelezo:document.getElementById('m-wp-me').value,sts:'a'};
   if(xid){
     const i = WAPANGAJI.findIndex(t=>t.id===xid);
     if(i>=0){ const _old=WAPANGAJI[i], _o2={...obj}; if(MALIPO.some(p=>p.id===xid)) _o2.kuisha=_old.kuisha; WAPANGAJI[i]={..._old,..._o2}; }   // kama ana malipo, tarehe ya kuisha inabaki ile ya malipo
@@ -4867,6 +4987,7 @@ function openHamaModal(id) {
   document.getElementById('m-hm-id').value = id;
   document.getElementById('m-hm-title').textContent = t.jina + ' — Kuondoka';
   document.getElementById('m-hm-td').value = new Date().toISOString().slice(0,10);
+  hamaRefresh();
   document.getElementById('m-hm-sababu').value='';
   document.getElementById('m-hm-mpangaji').value='';
   openModal('modal-hama');
@@ -4879,9 +5000,12 @@ function saveHama() {
   const mpya = document.getElementById('m-hm-mpangaji').value.trim();
   if(!td||!sababu){showToast('Jaza tarehe na sababu','w');return;}
   const t = WAPANGAJI.find(x=>x.id===id); if(!t) return;
-  // Mark tenant as left
+  const _hs = hamaSummary(t, td);
+  if((_hs.a.deni>0 || _hs.prepaidDays>0) && !confirm('Mpangaji ana '+(_hs.a.deni>0?'deni la TZS '+tzs(_hs.a.deni):'')+(_hs.a.deni>0&&_hs.prepaidDays>0?' na ':'')+(_hs.prepaidDays>0?'kodi ya mbele (siku '+_hs.prepaidDays+', takriban TZS '+tzs(_hs.prepaidAmt)+')':'')+'. Endelea kumwondoa?')) return;
+  t.kuishaMalipo = t.kuisha;   // hifadhi tarehe ya kodi iliyolipwa kabla ya kuondoka
   t.sts='x'; t.kuisha=td;
   HISTORIA.push({na:HISTORIA.length+1,id:t.id,jina:t.jina,nyumba:t.nyumba,mkoa:t.mkoa,aina:'MPANGAJI ALIYEHAMA',kuanza:t.kuingia,miezi:t.miezi,pango:t.pango,sc:0,kuisha:td,hali:'IMEISHA',maelezo:'Ameondoka. Sababu: '+sababu+(mpya?' | Mpangaji mpya: '+mpya:'')});
+  if(_hs.a.deni>0||_hs.prepaidDays>0) HISTORIA[HISTORIA.length-1].maelezo += ' | '+(_hs.a.deni>0?'Deni: TZS '+tzs(_hs.a.deni):'')+(_hs.a.deni>0&&_hs.prepaidDays>0?'; ':'')+(_hs.prepaidDays>0?'Kodi ya mbele: siku '+_hs.prepaidDays+' (≈ TZS '+tzs(_hs.prepaidAmt)+')':'');
   markDirty(); closeModal('modal-hama'); syncFirebase(); populateTenantSelects(); renderWP(); renderDash(); renderHI(); renderNY();
   showToast('✓ ' + t.jina + ' ameondolewa. Nyumba ' + t.nyumba + ' ipo huru.', 'ok');
 }
@@ -4932,7 +5056,7 @@ function openMalipoModal(prefill_id) {
   document.getElementById('m-pay-miezi').value=3;
   document.getElementById('m-pay-kilipo').value='';
   document.getElementById('m-pay-me').value='';
-  const _ku=document.getElementById('m-pay-kuanza'); if(_ku) _ku.value='';
+  const _ku=document.getElementById('m-pay-kuanza'); if(_ku) _ku.value=''; const _hd=document.getElementById('m-pay-hadi'); if(_hd) _hd.value='';
   populateTenantSelects();
   if(prefill_id){document.getElementById('m-mal-tenant').value=prefill_id;fillPayPango();}
   openModal('modal-malipo');
@@ -4974,6 +5098,9 @@ function saveMalipo(){
   const kilipo=parseInt(document.getElementById('m-pay-kilipo').value)||0;
   const njia=document.getElementById('m-pay-njia').value;
   if(!tarehe||!kilipo){showToast('Jaza tarehe na kilicholipwa','w');return;}
+  const _dk=id+'|'+tarehe+'|'+kilipo+'|'+miezi, _now=Date.now();
+  if(!window.__noDupGuard && window._lastPayKey===_dk && _now-(window._lastPayAt||0)<4000){ showToast('Malipo haya yameshahifadhiwa tu (usibonyeze mara mbili)','w'); return; }
+  window._lastPayKey=_dk; window._lastPayAt=_now;
   const a0=acct(t);                                   // hali ya mpangaji KABLA ya malipo haya
   const kuI=(document.getElementById('m-pay-kuanza')||{}).value||'';
   const kuanza=(kuI && kuI>=a0.paidThrough) ? kuI : a0.paidThrough;   // kipindi hakiwezi kuanza kabla ya kodi ya awali kuisha
@@ -5289,7 +5416,8 @@ function buildMkataba() {
     <div style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--teal);margin-bottom:8px">MPANGAJI (TENANT)</div>
     <div><strong>${t.jina}</strong></div>
     <div style="color:var(--grey)">Simu: ${t.simu}${t.simu2?' / '+t.simu2:''}</div>
-    ${t.kit?'<div style="color:var(--grey)">Kitambulisho: '+t.kit+'</div>':''}
+    ${t.kit?'<div style="color:var(--grey)">Kitambulisho'+(t.kitAina?' ('+escH(t.kitAina)+')':'')+': '+escH(t.kit)+'</div>':''}
+    ${(t.nduguJina||t.nduguSimu)?'<div style="color:var(--grey)">Mtu wa karibu (dharura): '+escH(t.nduguJina||'—')+(t.nduguUhusiano?' ('+escH(t.nduguUhusiano)+')':'')+' — Simu: '+escH(t.nduguSimu||'—')+'</div>':''}
     <div style="color:var(--grey)">ID: ${t.id}</div>
   `;
 
@@ -5348,6 +5476,6 @@ function buildMkataba() {
 
 </div><!-- /#admin-app-content -->
 
-<div class="no-print" style="position:fixed;left:8px;bottom:6px;font-size:10px;opacity:.45;pointer-events:none;z-index:50">Toleo 2.0</div>
+<div class="no-print" style="position:fixed;left:8px;bottom:6px;font-size:10px;opacity:.45;pointer-events:none;z-index:50">Toleo 2.1</div>
 </body>
 </html>
